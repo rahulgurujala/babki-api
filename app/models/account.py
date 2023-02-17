@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
@@ -10,9 +11,9 @@ class Account(Base):
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     account_type: str = Column(String, nullable=False)
-    account_name: str = Column(String(50))
+    account_name: str = Column(String(50), nullable=False)
     bank_name: str = Column(String)
-    amount: float = Column(Float, server_default="0.0")
+    balance: float = Column(Float, server_default="0.0")
     currency: str = Column(String, server_default="RUB")
     account_number: str = Column(String(20))
     user_id: int = Column(Integer, ForeignKey("users.id"))
@@ -22,10 +23,13 @@ class Account(Base):
         server_default=func.now(),
     )
     updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
+    transactions = relationship("transactions", backref="account")
 
-    def __init__(self, account_type) -> None:
+    def __init__(self, account_name, account_type, **kwargs) -> None:
         super().__init__()
+        self.account_name = account_name
         self.account_type = account_type
+        self.__dict__.update(kwargs)
 
     def __repr__(self) -> str:
         return f"<Account {self.id}: {self.created_at}>"

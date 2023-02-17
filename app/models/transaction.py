@@ -9,8 +9,7 @@ class Transaction(Base):
     __tablename__ = "transactions"
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
-    account_id: int = Column(Integer, ForeignKey("accounts.id"))
-    account_name: str = Column(String)
+    account_name: str = Column(String, nullable=False)
     amount: float = Column(Float, nullable=False)
     is_debit: bool = Column(Boolean, nullable=False)
     category: str = Column(String, server_default="Other")
@@ -19,6 +18,7 @@ class Transaction(Base):
         nullable=False,
         server_default=func.now(),
     )
+    account_id: int = Column(Integer, ForeignKey("accounts.id"))
 
     def __init__(self, name, amount, is_debit) -> None:
         super().__init__()
