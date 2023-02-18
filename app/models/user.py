@@ -27,7 +27,7 @@ class User(Base):
         server_default=func.now(),
     )
     updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
-    accounts = relationship("accounts", backref="owner")
+    accounts = relationship("Account", backref="owner")
 
     def __init__(self, username, email, password) -> None:
         super().__init__()
