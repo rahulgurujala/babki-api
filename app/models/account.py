@@ -12,10 +12,10 @@ class Account(Base):
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     account_type: str = Column(String, nullable=False)
     account_name: str = Column(String(50), nullable=False)
+    user_id: int = Column(Integer, ForeignKey("users.id"))
     balance: float = Column(Float, server_default="0.0")
     currency: str = Column(String, server_default="RUB")
     account_number: str = Column(String(20))
-    user_id: int = Column(Integer, ForeignKey("users.id"))
     created_at: TIMESTAMP = Column(
         TIMESTAMP(timezone=True),
         nullable=False,
@@ -24,10 +24,10 @@ class Account(Base):
     updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     transactions = relationship("Transaction", backref="account")
 
-    def __init__(self, account_name, account_type, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__()
-        self.account_name = account_name
-        self.account_type = account_type
+        # self.account_name = account_name
+        # self.account_type = account_type
         self.__dict__.update(kwargs)
 
     def __repr__(self) -> str:

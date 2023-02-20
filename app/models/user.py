@@ -29,12 +29,9 @@ class User(Base):
     updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     accounts = relationship("Account", backref="owner")
 
-    def __init__(self, username, email, password) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__()
-        # self.__dict__.update(kwargs)
-        self.username = username
-        self.email = email
-        self.password = password
+        self.__dict__.update(kwargs)
 
     def __repr__(self):
         return f"<User {self.id}: {self.username}>"
