@@ -6,7 +6,7 @@ from app.database import get_db
 from .. import models
 from ..schemas import *
 
-router = APIRouter(prefix="/", tags=["Users"])
+router = APIRouter(tags=["Users"])
 
 
 @router.get("/users", status_code=status.HTTP_200_OK)
