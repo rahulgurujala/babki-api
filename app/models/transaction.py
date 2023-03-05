@@ -20,11 +20,5 @@ class Transaction(Base):
     )
     account_id: int = Column(Integer, ForeignKey("accounts.id"))
 
-    def __init__(self, name, amount, is_debit) -> None:
-        super().__init__()
-        self.account_name = name
-        self.amount = amount
-        self.is_debit = is_debit
-
     def __repr__(self) -> str:
         return f"<Transaction {self.id}: {self.created_at}>"
