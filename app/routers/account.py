@@ -9,19 +9,32 @@ router = APIRouter(prefix="/accounts", tags=["Accounts"])
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[schemas.Account])
-def get_accounts(user_id: int, db: Session = Depends(get_db)):
+def get_accounts(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user),
+):
     """Returns all user accounts"""
 
-    accounts = db.query(models.Account).filter(models.Account.user_id == user_id).all()
+    accounts = (
+        db.query(models.Account).filter(models.Account.user_id == current_user.id).all()
+    )
 
     return accounts
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Account)
-def get_account(id: int, db: Session = Depends(get_db)):
+def get_account(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user),
+):
     """Return single user account"""
 
-    account = db.query(models.Account).filter(models.Account.id == id).first()
+    account = (
+        db.query(models.Account)
+        .filter(models.Account.id == id, models.Account.user_id == current_user.id)
+        .first()
+    )
 
     if not account:
         raise HTTPException(
@@ -35,18 +48,11 @@ def get_account(id: int, db: Session = Depends(get_db)):
 def create_account(
     Account: schemas.AccountCreate,
     db: Session = Depends(get_db),
-    user_id: int = Depends(oauth2.get_current_user),
+    current_user: models.User = Depends(oauth2.get_current_user),
 ):
     """Creates user account"""
 
-    user = db.query(models.User).filter(models.User.id == Account.user_id).first()
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="User does not exist."
-        )
-
-    account = models.Account(**Account.dict(), owner=user)
+    account = models.Account(**Account.dict(), user=current_user)
     db.add(account)
     db.commit()
     db.refresh(account)
@@ -56,37 +62,48 @@ def create_account(
 
 @router.patch("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Account)
 def update_account(
-    id: int, account: schemas.AccountUpdate, db: Session = Depends(get_db)
+    id: int,
+    account: schemas.AccountUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user),
 ):
     """Updates account"""
 
-    post_query = db.query(models.Account).filter(models.User.id == id)
+    account_query = db.query(models.Account).filter(
+        models.Account.id == id, models.Account.user_id == current_user.id
+    )
 
-    if not post_query.first():
+    if not account_query.first():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Account does not exist.",
         )
 
-    post_query.update(account.dict(exclude_unset=True), synchronize_session=False)
+    account_query.update(account.dict(exclude_unset=True), synchronize_session=False)
     db.commit()
 
-    return post_query.first()
+    return account_query.first()
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_account(id: int, db: Session = Depends(get_db)):
+def delete_account(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user),
+):
     """Deletes user account"""
 
-    post_query = db.query(models.Account).filter(models.User.id == id)
+    account_query = db.query(models.Account).filter(
+        models.Account.id == id, models.Account.user_id == current_user.id
+    )
 
-    if not post_query.first():
+    if not account_query.first():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Account does not exist.",
         )
 
-    post_query.delete(synchronize_session=False)
+    account_query.delete(synchronize_session=False)
     db.commit()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
