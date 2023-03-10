@@ -1,5 +1,8 @@
+from datetime import datetime
 from enum import Enum
+from typing import Optional
 
+from click import option
 from pydantic import BaseModel
 
 from .account import Account
@@ -11,13 +14,17 @@ class TransactionType(str, Enum):
 
 
 class TransactionBase(BaseModel):
-    amount: str
+    amount: float
     transaction_type: TransactionType
+    created_at: datetime = None
 
 
 class TransactionCreate(TransactionBase):
-    account_number: str
+    account_id: int
 
 
-class Transaction(BaseModel):
-    account: Account
+class Transaction(TransactionBase):
+    account_id: int
+
+    class Config:
+        orm_mode = True

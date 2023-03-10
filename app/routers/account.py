@@ -8,11 +8,11 @@ from .. import models, oauth2, schemas
 router = APIRouter(prefix="/accounts", tags=["Accounts"])
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=list[schemas.Account])
+@router.get("/", status_code=status.HTTP_200_OK)
 def get_accounts(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
-):
+) -> list[schemas.Account]:
     """Returns all user accounts"""
 
     accounts = (
@@ -22,12 +22,12 @@ def get_accounts(
     return accounts
 
 
-@router.get("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Account)
+@router.get("/{id}", status_code=status.HTTP_200_OK)
 def get_account(
     id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
-):
+) -> schemas.Account:
     """Return single user account"""
 
     account = (
@@ -44,12 +44,12 @@ def get_account(
     return account
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Account)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def create_account(
     Account: schemas.AccountCreate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
-):
+) -> schemas.Account:
     """Creates user account"""
 
     account = models.Account(**Account.dict(), user=current_user)
@@ -60,13 +60,13 @@ def create_account(
     return account
 
 
-@router.patch("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Account)
+@router.patch("/{id}", status_code=status.HTTP_200_OK)
 def update_account(
     id: int,
     account: schemas.AccountUpdate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
-):
+) -> schemas.Account:
     """Updates account"""
 
     account_query = db.query(models.Account).filter(
