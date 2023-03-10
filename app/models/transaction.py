@@ -12,7 +12,7 @@ class TransactionType(str, enum.Enum):
     DEBIT = "DEBIT"
 
 
-class CategoryType(str, enum.Enum):
+class Category(str, enum.Enum):
     HEALTH = "HEALTH"
     FOOD = "FOOD"
     GROCERIES = "GROCERIES"
@@ -33,7 +33,7 @@ class Transaction(Base):
         nullable=False,
         server_default="CREDIT",
     )
-    category: str = Column(String, server_default="Other")
+    category: str = Column(Enum(Category, name="category"), server_default="Other")
     created_at: TIMESTAMP = Column(
         TIMESTAMP(timezone=True),
         nullable=False,
