@@ -14,7 +14,7 @@ def get_all_transactions(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> list[schemas.Transaction]:
-    """Get all account transactions"""
+    """Get all user transactions"""
 
     transactions = db.query(models.Transaction).all()
 
