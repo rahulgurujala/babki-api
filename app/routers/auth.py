@@ -7,12 +7,12 @@ from .. import database, models, oauth2, schemas, utils
 router = APIRouter(tags=["Authentication"])
 
 
-@router.post("/login", response_model=schemas.Token)
+@router.post("/login")
 def login(
     # credentials: OAuth2PasswordRequestForm = Depends(),
     credentials: schemas.UserLogin,
     db: Session = Depends(database.get_db),
-):
+) -> schemas.Token:
     """Login user"""
 
     user = db.query(models.User).filter(models.User.email == credentials.email).first()
