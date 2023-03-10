@@ -21,6 +21,7 @@ class Category(str, enum.Enum):
     TRAVEL = "TRAVEL"
     WITHDRAW = "WITHDRAW"
     OTHERS = "OTHERS"
+    SUBSCRIPTIONS = "SUBSCRIPTIONS"
 
 
 class Transaction(Base):
