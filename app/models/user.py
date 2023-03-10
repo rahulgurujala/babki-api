@@ -21,7 +21,7 @@ class User(Base):
         server_default=func.now(),
     )
     updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
-    accounts = relationship("Account", backref="owner")
+    accounts = relationship("Account", backref="user")
 
     def __repr__(self):
         return f"<User {self.id}: {self.username}>"
