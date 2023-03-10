@@ -13,11 +13,10 @@ class AccountBase(BaseModel):
 
 
 class AccountCreate(AccountBase):
-    user_id: int
+    pass
 
 
 class Account(AccountBase):
-    user_id: int
     id: int
     created_at: datetime
     updated_at: datetime = None
