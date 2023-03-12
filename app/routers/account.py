@@ -79,6 +79,12 @@ def update_account(
             detail=f"Account does not exist.",
         )
 
+    if account_query.first().user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform action.",
+        )
+
     account_query.update(account.dict(exclude_unset=True), synchronize_session=False)
     db.commit()
 
@@ -101,6 +107,12 @@ def delete_account(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Account does not exist.",
+        )
+
+    if account_query.first().user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform action.",
         )
 
     account_query.delete(synchronize_session=False)
