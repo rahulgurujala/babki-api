@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Boolean, Column, Enum, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, Enum, Float, ForeignKey, Integer
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
@@ -34,7 +34,7 @@ class Transaction(Base):
         nullable=False,
         server_default="CREDIT",
     )
-    category: str = Column(Enum(Category, name="category"), server_default="Other")
+    category: str = Column(Enum(Category, name="category"), server_default="OTHERS")
     created_at: TIMESTAMP = Column(
         TIMESTAMP(timezone=True),
         nullable=False,
@@ -43,6 +43,3 @@ class Transaction(Base):
     account_id: int = Column(
         Integer, ForeignKey("accounts.id", ondelete="CASCADE"), nullable=False
     )
-
-    def __repr__(self) -> str:
-        return f"<Transaction {self.id}: {self.created_at}>"

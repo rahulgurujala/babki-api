@@ -25,6 +25,3 @@ class Account(Base):
     )
     updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     transactions = relationship("Transaction", backref="account")
-
-    def __repr__(self) -> str:
-        return f"<Account {self.id}: {self.created_at}>"

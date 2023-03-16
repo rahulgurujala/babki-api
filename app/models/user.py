@@ -1,8 +1,7 @@
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.expression import func, text
+from sqlalchemy.sql.expression import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
-from werkzeug.security import generate_password_hash
 
 from app.database import Base
 
@@ -22,6 +21,3 @@ class User(Base):
     )
     updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     accounts = relationship("Account", backref="user")
-
-    def __repr__(self):
-        return f"<User {self.id}: {self.username}>"
