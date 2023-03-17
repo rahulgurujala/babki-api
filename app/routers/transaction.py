@@ -80,7 +80,7 @@ def delete_transaction(
 @router.patch("/{id}", status_code=status.HTTP_200_OK)
 def update_transaction(
     id: int,
-    transcation: schemas.TransactionUpdate,
+    transaction: schemas.TransactionUpdate,
     db: Session = Depends(get_db),
     current_user: models.user = Depends(oauth2.get_current_user),
 ):
@@ -92,7 +92,7 @@ def update_transaction(
         raise HTTPException(404, detail=f"Transaction of id {id} does not exist.")
 
     transaction_query.update(
-        transcation.dict(exclude_unset=True), synchronize_session=False
+        transaction.dict(exclude_unset=True), synchronize_session=False
     )
     db.commit()
 
