@@ -15,11 +15,11 @@ def get_accounts(
 ) -> list[schemas.Account]:
     """Returns all user accounts"""
 
-    accounts = (
-        db.query(models.Account).filter(models.Account.user_id == current_user.id).all()
+    return (
+        db.query(models.Account)
+        .filter(models.Account.user_id == current_user.id)
+        .all()
     )
-
-    return accounts
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
@@ -30,18 +30,18 @@ def get_account(
 ) -> schemas.Account:
     """Return single user account"""
 
-    account = (
+    if account := (
         db.query(models.Account)
-        .filter(models.Account.id == id, models.Account.user_id == current_user.id)
+        .filter(
+            models.Account.id == id, models.Account.user_id == current_user.id
+        )
         .first()
-    )
-
-    if not account:
+    ):
+        return account
+    else:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Account does not exist."
         )
-
-    return account
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -76,7 +76,7 @@ def update_account(
     if not account_query.first():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Account does not exist.",
+            detail="Account does not exist.",
         )
 
     if account_query.first().user_id != current_user.id:
@@ -106,7 +106,7 @@ def delete_account(
     if not account_query.first():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Account does not exist.",
+            detail="Account does not exist.",
         )
 
     if account_query.first().user_id != current_user.id:
