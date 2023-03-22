@@ -16,9 +16,7 @@ def get_all_transactions(
 ) -> list[schemas.Transaction]:
     """Get all user transactions"""
 
-    transactions = db.query(models.Transaction).all()
-
-    return transactions
+    return db.query(models.Transaction).all()
 
 
 @router.get("/{account_id}", status_code=status.HTTP_200_OK)
@@ -29,18 +27,18 @@ def get_account_transactions(
 ) -> list[schemas.Transaction]:
     """Get all account transactions"""
 
-    account = db.query(models.Account).filter(models.Account.id == account_id).first()
-
-    if not account:
+    if (
+        account := db.query(models.Account)
+        .filter(models.Account.id == account_id)
+        .first()
+    ):
+        return (
+            db.query(models.Transaction)
+            .filter(models.Transaction.account_id == account_id)
+            .all()
+        )
+    else:
         raise HTTPException(404, detail="Account does not exist.")
-
-    transactions = (
-        db.query(models.Transaction)
-        .filter(models.Transaction.account_id == account_id)
-        .all()
-    )
-
-    return transactions
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)

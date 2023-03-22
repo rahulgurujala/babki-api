@@ -12,23 +12,19 @@ router = APIRouter(prefix="/users", tags=["Users"])
 def get_users(db: Session = Depends(get_db)) -> list[schemas.User]:
     """Returns all users"""
 
-    users = db.query(models.User).all()
-
-    return users
+    return db.query(models.User).all()
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
 def get_user(id: int, db: Session = Depends(get_db)) -> schemas.User:
     """Returns single user"""
 
-    user = db.query(models.User).filter(models.User.id == id).first()
-
-    if not user:
+    if user := db.query(models.User).filter(models.User.id == id).first():
+        return user
+    else:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User does not exist."
         )
-
-    return user
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)

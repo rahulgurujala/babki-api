@@ -20,21 +20,19 @@ def create_access_token(data: dict):
     to_encode = data.copy()
 
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    to_encode["exp"] = expire
 
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, ALGORITHM)
-
-    return encoded_jwt
+    return jwt.encode(to_encode, SECRET_KEY, ALGORITHM)
 
 
 def verify_access_token(token: str, credentials_exception):
 
     try:
         payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
-        id: int = payload.get("user_id")
-        if not id:
+        if id := payload.get("user_id"):
+            token_data = schemas.TokenData(id=id)
+        else:
             raise credentials_exception
-        token_data = schemas.TokenData(id=id)
     except JWTError:
         raise credentials_exception
 
@@ -50,6 +48,4 @@ def get_current_user(
 
     token = verify_access_token(token, credentials_exception)
 
-    user = db.query(models.User).filter(models.User.id == token.id).first()
-
-    return user
+    return db.query(models.User).filter(models.User.id == token.id).first()
