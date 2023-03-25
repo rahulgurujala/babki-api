@@ -28,7 +28,6 @@ def create_access_token(data: dict):
 
 
 def verify_access_token(token: str, credentials_exception):
-
     try:
         payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
         id: int = payload.get("user_id")
@@ -45,7 +44,7 @@ def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)
 ):
     credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, detail="Unable to verify credentials"
+        status_code=status.HTTP_401_UNAUTHORIZED, detail="Unable to verify credentials."
     )
 
     token = verify_access_token(token, credentials_exception)
