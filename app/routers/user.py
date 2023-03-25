@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
+from app import oauth2
 from app.database import get_db
 
 from .. import models, schemas, utils
@@ -8,13 +9,13 @@ from .. import models, schemas, utils
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.get("/", status_code=status.HTTP_200_OK)
-def get_users(db: Session = Depends(get_db)) -> list[schemas.User]:
-    """Returns all users"""
+# @router.get("/", status_code=status.HTTP_200_OK)
+# def get_users(db: Session = Depends(get_db)) -> list[schemas.User]:
+#     """Returns all users"""
 
-    users = db.query(models.User).all()
+#     users = db.query(models.User).all()
 
-    return users
+#     return users
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
@@ -56,37 +57,37 @@ def create_user(
     return new_user
 
 
-# @router.patch("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.User)
-# def update_user(id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
-#     """Updates user"""
+@router.patch("/{id}", status_code=status.HTTP_200_OK)
+def update_user(
+    id: int,
+    user_update: schemas.UserUpdateIn,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user),
+) -> schemas.UserUpdateOut:
+    """Updates user"""
 
-#     user_query = db.query(models.User).filter(models.User.id == id)
+    user_query = db.query(models.User).filter(models.User.id == id)
 
-#     if not user_query.first():
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail=f"User does not exist.",
-#         )
+    user = user_query.first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User does not exist.",
+        )
 
-#     user_query.update(user.dict(exclude_unset=True), synchronize_session=False)
-#     db.commit()
+    if id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform requested action.",
+        )
 
-#     return user_query.first()
+    if user_update.email and user.email == user_update.email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A user with that email was found.",
+        )
 
+    user_query.update(user_update.dict(exclude_unset=True), synchronize_session=False)
+    db.commit()
 
-# @router.delete("/{id}")
-# def delete_user(id: int, db: Session = Depends(get_db)):
-#     """Deletes user account"""
-
-#     user_query = db.query(models.User).filter(models.User.id == id)
-
-#     if not user_query.first():
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail=f"User does not exist.",
-#         )
-
-#     user_query.delete(synchronize_session=False)
-#     db.commit()
-
-#     return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return user

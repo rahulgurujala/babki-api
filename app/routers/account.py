@@ -63,7 +63,7 @@ def create_account(
 @router.patch("/{id}", status_code=status.HTTP_200_OK)
 def update_account(
     id: int,
-    account: schemas.AccountUpdate,
+    account_update: schemas.AccountUpdate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> schemas.Account:
@@ -73,22 +73,25 @@ def update_account(
         models.Account.id == id, models.Account.user_id == current_user.id
     )
 
-    if not account_query.first():
+    account = account_query.first()
+    if not account:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Account does not exist.",
         )
 
-    if account_query.first().user_id != current_user.id:
+    if account.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to perform action.",
         )
 
-    account_query.update(account.dict(exclude_unset=True), synchronize_session=False)
+    account_query.update(
+        account_update.dict(exclude_unset=True), synchronize_session=False
+    )
     db.commit()
 
-    return account_query.first()
+    return account
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -103,13 +106,14 @@ def delete_account(
         models.Account.id == id, models.Account.user_id == current_user.id
     )
 
-    if not account_query.first():
+    account = account_query.first()
+    if not account:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Account does not exist.",
         )
 
-    if account_query.first().user_id != current_user.id:
+    if account.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to perform action.",
