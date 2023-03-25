@@ -15,10 +15,21 @@ class UserCreate(UserBase):
     password: str
 
 
-class UserUpdate(BaseModel):
+class UserUpdateIn(BaseModel):
     username: Optional[str]
-    email: Optional[str]
+    email: Optional[EmailStr]
     cash: Optional[float]
+
+
+class UserUpdateOut(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    cash: float
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True
 
 
 class User(UserBase):
