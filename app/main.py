@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import account, auth, transaction, user
 
-app = FastAPI()
+app = FastAPI(redoc_url="/", docs_url=None)
 
 origins = ["*"]
 
