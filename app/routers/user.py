@@ -19,8 +19,18 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
-def get_user(id: int, db: Session = Depends(get_db)) -> schemas.User:
+def get_user(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user),
+) -> schemas.User:
     """Returns single user"""
+
+    if id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform action.",
+        )
 
     user = db.query(models.User).filter(models.User.id == id).first()
 
