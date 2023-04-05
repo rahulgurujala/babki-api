@@ -43,3 +43,6 @@ class Transaction(Base):
     account_id: int = Column(
         Integer, ForeignKey("accounts.id", ondelete="CASCADE"), nullable=False
     )
+    user_id: int = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
