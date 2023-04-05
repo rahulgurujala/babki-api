@@ -20,8 +20,8 @@ class Account(Base):
         nullable=False,
         server_default=func.now(),
     )
+    updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     user_id: int = Column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     transactions = relationship("Transaction", backref="account")

@@ -8,7 +8,8 @@ from .. import models, oauth2, schemas
 router = APIRouter(prefix="/accounts", tags=["Accounts"])
 
 
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK, include_in_schema=False)
 def get_accounts(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
@@ -44,15 +45,16 @@ def get_account(
     return account
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 def create_account(
-    Account: schemas.AccountCreate,
+    account_create: schemas.AccountCreate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> schemas.Account:
     """Creates user account"""
 
-    account = models.Account(**Account.dict(), user=current_user)
+    account = models.Account(**account_create.dict(), user=current_user)
     db.add(account)
     db.commit()
     db.refresh(account)
@@ -72,8 +74,8 @@ def update_account(
     account_query = db.query(models.Account).filter(
         models.Account.id == id, models.Account.user_id == current_user.id
     )
-
     account = account_query.first()
+
     if not account:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -105,8 +107,8 @@ def delete_account(
     account_query = db.query(models.Account).filter(
         models.Account.id == id, models.Account.user_id == current_user.id
     )
-
     account = account_query.first()
+
     if not account:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

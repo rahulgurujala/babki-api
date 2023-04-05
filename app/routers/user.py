@@ -9,15 +9,6 @@ from .. import models, schemas, utils
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-# @router.get("/", status_code=status.HTTP_200_OK)
-# def get_users(db: Session = Depends(get_db)) -> list[schemas.User]:
-#     """Returns all users"""
-
-#     users = db.query(models.User).all()
-
-#     return users
-
-
 @router.get("/{id}", status_code=status.HTTP_200_OK)
 def get_user(
     id: int,
@@ -42,13 +33,14 @@ def get_user(
     return user
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 def create_user(
-    user: schemas.UserCreate, db: Session = Depends(get_db)
+    user_create: schemas.UserCreate, db: Session = Depends(get_db)
 ) -> schemas.User:
     """Creates user"""
 
-    user_query = db.query(models.User).filter(models.User.email == user.email)
+    user_query = db.query(models.User).filter(models.User.email == user_create.email)
 
     if user_query.first():
         raise HTTPException(
@@ -56,9 +48,9 @@ def create_user(
         )
 
     # Hash user's password
-    user.password = utils.hash(user.password)
+    user_create.password = utils.hash(user_create.password)
 
-    new_user = models.User(**user.dict())
+    new_user = models.User(**user_create.dict())
 
     db.add(new_user)
     db.commit()
