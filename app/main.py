@@ -3,7 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import account, auth, transaction, user
 
-app = FastAPI(redoc_url="/", docs_url=None)
+app = FastAPI(
+    docs_url="/",
+    title="babki API",
+    description="An API for babki, a financial budget application.",
+)
 
 origins = ["*"]
 
