@@ -1,3 +1,3 @@
 # babki-api
 
-API for my financial bugdet application.
+API for babki, a financial bugdet application.
