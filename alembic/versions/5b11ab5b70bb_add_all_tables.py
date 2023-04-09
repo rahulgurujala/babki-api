@@ -1,8 +1,8 @@
 """add all tables
 
-Revision ID: 259f0104bfe6
+Revision ID: 5b11ab5b70bb
 Revises: 
-Create Date: 2023-03-16 03:00:02.982387
+Create Date: 2023-04-09 23:51:22.607830
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '259f0104bfe6'
+revision = '5b11ab5b70bb'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,7 +23,6 @@ def upgrade() -> None:
     sa.Column('username', sa.String(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
-    sa.Column('cash', sa.Float(), server_default='0.0', nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id'),
@@ -31,25 +30,27 @@ def upgrade() -> None:
     )
     op.create_table('accounts',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('account_type', sa.String(), nullable=False),
+    sa.Column('account_type', sa.Enum('CASH', 'DEBIT_CREDIT_CARD', 'CHECKING', 'DEPOSIT', 'LOAN', name='account_type'), nullable=False),
     sa.Column('account_name', sa.String(length=50), nullable=False),
     sa.Column('balance', sa.Float(), server_default='0.0', nullable=True),
-    sa.Column('currency', sa.String(), server_default='RUB', nullable=True),
+    sa.Column('currency', sa.Enum('RUB', 'USD', name='currency_type'), server_default='RUB', nullable=True),
     sa.Column('account_number', sa.String(length=20), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(timezone=True), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('transactions',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('amount', sa.Float(), nullable=False),
-    sa.Column('transaction_type', sa.Enum('CREDIT', 'DEBIT', name='transaction_type'), server_default='CREDIT', nullable=False),
-    sa.Column('category', sa.Enum('HEALTH', 'FOOD', 'GROCERIES', 'TRANSFER', 'TRANSPORT', 'TRAVEL', 'WITHDRAW', 'OTHERS', 'SUBSCRIPTIONS', name='category'), server_default='OTHERS', nullable=True),
+    sa.Column('transaction_type', sa.Enum('CREDIT', 'DEBIT', name='transaction_type'), nullable=False),
+    sa.Column('category', sa.Enum('HEALTH', 'FOOD', 'GROCERIES', 'TRANSFER', 'TRANSPORT', 'TRAVEL', 'WITHDRAW', 'OTHERS', 'SUBSCRIPTIONS', name='category'), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('account_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['account_id'], ['accounts.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

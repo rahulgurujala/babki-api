@@ -8,20 +8,20 @@ from app.database import Base
 
 
 class TransactionType(str, enum.Enum):
-    CREDIT = "CREDIT"
-    DEBIT = "DEBIT"
+    CREDIT = "Credit"
+    DEBIT = "Debit"
 
 
 class Category(str, enum.Enum):
-    HEALTH = "HEALTH"
-    FOOD = "FOOD"
-    GROCERIES = "GROCERIES"
-    TRANSFER = "TRANSFER"
-    TRANSPORT = "TRANSPORT"
-    TRAVEL = "TRAVEL"
-    WITHDRAW = "WITHDRAW"
-    OTHERS = "OTHERS"
-    SUBSCRIPTIONS = "SUBSCRIPTIONS"
+    HEALTH = "Health"
+    FOOD = "Food"
+    GROCERIES = "Groceries"
+    TRANSFER = "Transfer"
+    TRANSPORT = "Transport"
+    TRAVEL = "Travel"
+    WITHDRAW = "Withdraw"
+    OTHERS = "Others"
+    SUBSCRIPTIONS = "Subscriptions"
 
 
 class Transaction(Base):
@@ -32,9 +32,8 @@ class Transaction(Base):
     transaction_type: bool = Column(
         Enum(TransactionType, name="transaction_type"),
         nullable=False,
-        server_default="CREDIT",
     )
-    category: str = Column(Enum(Category, name="category"), server_default="OTHERS")
+    category: str = Column(Enum(Category, name="category"))
     created_at: TIMESTAMP = Column(
         TIMESTAMP(timezone=True),
         nullable=False,

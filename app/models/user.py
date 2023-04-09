@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
@@ -13,7 +13,6 @@ class User(Base):
     username: str = Column(String, nullable=False)
     email: str = Column(String, nullable=False, unique=True)
     password: str = Column(String, nullable=False)
-    cash: float = Column(Float, server_default="0.0")
     created_at: TIMESTAMP = Column(
         TIMESTAMP(timezone=True),
         nullable=False,
