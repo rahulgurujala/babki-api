@@ -1,15 +1,10 @@
 import enum
 
-from sqlalchemy import Column, Enum, Float, ForeignKey, Integer
+from sqlalchemy import Boolean, Column, Enum, Float, ForeignKey, Integer
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
 from app.database import Base
-
-
-class TransactionType(str, enum.Enum):
-    CREDIT = "Credit"
-    DEBIT = "Debit"
 
 
 class Category(str, enum.Enum):
@@ -29,10 +24,7 @@ class Transaction(Base):
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     amount: float = Column(Float, nullable=False)
-    transaction_type: bool = Column(
-        Enum(TransactionType, name="transaction_type"),
-        nullable=False,
-    )
+    is_debit: bool = Column(Boolean, nullable=False)
     category: str = Column(Enum(Category, name="category"))
     created_at: TIMESTAMP = Column(
         TIMESTAMP(timezone=True),
