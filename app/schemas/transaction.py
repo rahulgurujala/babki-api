@@ -3,12 +3,12 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.models.transaction import Category, TransactionType
+from app.models.transaction import Category
 
 
 class TransactionBase(BaseModel):
     amount: float
-    transaction_type: TransactionType
+    transaction_type: bool
     created_at: datetime = None
 
 
@@ -20,7 +20,7 @@ class TransactionCreate(TransactionBase):
 class TransactionUpdate(BaseModel):
     amount: Optional[float]
     category: Optional[Category]
-    transaction_type: Optional[TransactionType]
+    transaction_type: bool
 
 
 class Transaction(TransactionBase):
