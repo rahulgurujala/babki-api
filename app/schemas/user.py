@@ -18,14 +18,12 @@ class UserCreate(UserBase):
 class UserUpdateIn(BaseModel):
     username: Optional[str]
     email: Optional[EmailStr]
-    cash: Optional[float]
 
 
 class UserUpdateOut(BaseModel):
     id: int
     username: str
     email: EmailStr
-    cash: float
     updated_at: datetime
 
     class Config:
@@ -34,7 +32,6 @@ class UserUpdateOut(BaseModel):
 
 class User(UserBase):
     id: int
-    cash: float
     created_at: datetime
     updated_at: datetime = None
     accounts: list[Account]
