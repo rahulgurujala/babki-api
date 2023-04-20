@@ -8,8 +8,8 @@ from app.models.transaction import Category
 
 class TransactionBase(BaseModel):
     amount: float
-    transaction_type: bool
     created_at: datetime = None
+    is_debit: bool
 
 
 class TransactionCreate(TransactionBase):
@@ -20,7 +20,6 @@ class TransactionCreate(TransactionBase):
 class TransactionUpdate(BaseModel):
     amount: Optional[float]
     category: Optional[Category]
-    transaction_type: bool
 
 
 class Transaction(TransactionBase):
