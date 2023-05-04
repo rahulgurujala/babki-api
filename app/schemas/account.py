@@ -20,6 +20,7 @@ class Account(AccountBase):
     id: int
     created_at: datetime
     updated_at: datetime = None
+    user_id: int
 
     class Config:
         orm_mode = True
