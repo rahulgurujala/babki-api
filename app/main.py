@@ -5,8 +5,8 @@ from app.routers import account, auth, transaction, user
 
 app = FastAPI(
     docs_url="/",
-    title="babki API",
-    description="An API for babki, a financial budget application.",
+    title="denari API",
+    description="An API for denari, a financial budget application.",
 )
 
 origins = ["*"]

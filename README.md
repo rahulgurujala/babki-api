@@ -1,3 +1,3 @@
-# babki-api
+# denari-api
 
-API for babki, a financial bugdet application.
+API for denari, a financial bugdet application.
