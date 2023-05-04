@@ -71,9 +71,7 @@ def update_account(
 ) -> schemas.Account:
     """Updates account"""
 
-    account_query = db.query(models.Account).filter(
-        models.Account.id == id, models.Account.user_id == current_user.id
-    )
+    account_query = db.query(models.Account).filter(models.Account.id == id)
     account = account_query.first()
 
     if not account:
@@ -104,9 +102,7 @@ def delete_account(
 ):
     """Deletes user account"""
 
-    account_query = db.query(models.Account).filter(
-        models.Account.id == id, models.Account.user_id == current_user.id
-    )
+    account_query = db.query(models.Account).filter(models.Account.id == id)
     account = account_query.first()
 
     if not account:
