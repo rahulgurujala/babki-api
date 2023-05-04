@@ -3,13 +3,14 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from app import models
 from app.config import settings
 from app.database import get_db
 from app.main import app
 from app.models import Base
+from app.oauth2 import create_access_token
 
 SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.DB_USERNAME}:{settings.DB_PASSWORD}@{settings.DB_HOSTNAME}:{settings.DB_PORT}/{settings.DB_NAME}_test"
-
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
@@ -52,3 +53,51 @@ def test_user(client):
     new_user["password"] = user_data["password"]
 
     return new_user
+
+
+@pytest.fixture()
+def token(test_user):
+    return create_access_token({"user_id": test_user["id"]})
+
+
+@pytest.fixture()
+def authorized_client(client, token):
+    client.headers = {**client.headers, "Authorization": f"Bearer {token}"}
+
+    return client
+
+
+@pytest.fixture()
+def test_accounts(test_user, session):
+    accounts_data = [
+        {
+            "account_type": "Cash",
+            "account_name": "Bank 1",
+            "balance": 120,
+            "user_id": test_user["id"],
+        },
+        {
+            "account_type": "Deposit",
+            "account_name": "Bank 2",
+            "balance": 120,
+            "user_id": test_user["id"],
+        },
+        {
+            "account_type": "Checking",
+            "account_name": "Bank 3",
+            "balance": 120,
+            "user_id": test_user["id"],
+        },
+    ]
+
+    def create_account_model(account):
+        return models.Account(**account)
+
+    accounts_map = map(create_account_model, accounts_data)
+    accounts = list(accounts_map)
+
+    session.add_all(accounts)
+    session.commit()
+
+    accounts = session.query(models.Account).all()
+    return accounts

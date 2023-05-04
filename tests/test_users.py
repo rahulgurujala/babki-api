@@ -14,20 +14,19 @@ def test_create_user(client):
 
 
 @pytest.mark.parametrize(
-    "username, email, password",
+    "email, password, status_code",
     [
-        (None, "test@gmail.com", "test123"),
-        ("test", None, "test123"),
-        ("test", "test@gmail.com", None),
+        ("wrongemail@gmail.com", "test123", 403),
+        ("test@gmail.com", "wrongpassword", 403),
+        ("wrongemail@gmail.com", "wrongpassword", 403),
+        (None, "test123", 422),
+        ("test@gmail.com", None, 422),
     ],
 )
-@pytest.mark.xfail
-def test_create_user_wrong_credentials(client, username, email, password):
-    res = client.post(
-        "/users", json={"username": username, "email": email, "password": password}
-    )
+def test_incorrect_login(test_user, client, email, password, status_code):
+    res = client.post("/login", data={"username": email, "password": password})
 
-    assert res.status_code == 201
+    assert res.status_code == status_code
 
 
 def test_login_user(client, test_user):
