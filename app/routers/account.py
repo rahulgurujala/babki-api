@@ -54,7 +54,7 @@ def create_account(
 ) -> schemas.Account:
     """Creates user account"""
 
-    account = models.Account(**account_create.dict(), user=current_user)
+    account = models.Account(**account_create.dict(), user_id=current_user.id)
     db.add(account)
     db.commit()
     db.refresh(account)
