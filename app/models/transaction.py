@@ -26,7 +26,7 @@ class Transaction(Base):
     amount: float = Column(Float, nullable=False)
     is_debit: bool = Column(Boolean, nullable=False)
     category: str = Column(
-        Enum(Category, name="category"), server_default=Category.OTHERS
+        Enum(Category, name="category"), server_default=Category.OTHERS.name
     )
     created_at: TIMESTAMP = Column(
         TIMESTAMP(timezone=True),
