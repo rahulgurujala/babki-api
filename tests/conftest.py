@@ -56,6 +56,21 @@ def test_user(client):
 
 
 @pytest.fixture()
+def test_user2(client):
+    user_data = {"username": "test2", "email": "test2@gmail.com", "password": "test123"}
+    res = client.post(
+        "/users",
+        json=user_data,
+    )
+    assert res.status_code == 201
+
+    new_user = res.json()
+    new_user["password"] = user_data["password"]
+
+    return new_user
+
+
+@pytest.fixture()
 def token(test_user):
     return create_access_token({"user_id": test_user["id"]})
 
@@ -68,7 +83,7 @@ def authorized_client(client, token):
 
 
 @pytest.fixture()
-def test_accounts(test_user, session):
+def test_accounts(test_user, test_user2, session):
     accounts_data = [
         {
             "account_type": "Cash",
@@ -87,6 +102,12 @@ def test_accounts(test_user, session):
             "account_name": "Bank 3",
             "balance": 120,
             "user_id": test_user["id"],
+        },
+        {
+            "account_type": "Checking",
+            "account_name": "Bank 3",
+            "balance": 120,
+            "user_id": test_user2["id"],
         },
     ]
 
