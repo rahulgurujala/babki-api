@@ -88,25 +88,25 @@ def test_accounts(test_user, test_user2, session):
         {
             "account_type": "Cash",
             "account_name": "Bank 1",
-            "balance": 120,
+            "balance": 500,
             "user_id": test_user["id"],
         },
         {
             "account_type": "Deposit",
             "account_name": "Bank 2",
-            "balance": 120,
+            "balance": 500,
             "user_id": test_user["id"],
         },
         {
             "account_type": "Checking",
             "account_name": "Bank 3",
-            "balance": 120,
+            "balance": 500,
             "user_id": test_user["id"],
         },
         {
             "account_type": "Checking",
             "account_name": "Bank 3",
-            "balance": 120,
+            "balance": 500,
             "user_id": test_user2["id"],
         },
     ]
@@ -122,3 +122,27 @@ def test_accounts(test_user, test_user2, session):
 
     accounts = session.query(models.Account).all()
     return accounts
+
+
+@pytest.fixture()
+def test_transactions(test_user, test_accounts, session):
+    transactions_data = [
+        {"user_id": 1, "account_id": 1, "amount": 2000, "is_debit": False},
+    ]
+
+    def create_transaction_model(transaction):
+        return models.Transaction(**transaction)
+
+    transactions_map = map(create_transaction_model, transactions_data)
+    transactions = list(transactions_map)
+
+    session.add_all(transactions)
+    session.commit()
+
+    transactions = session.query(models.Transaction).all()
+    return transactions
+
+
+@pytest.fixture()
+def update_account_data():
+    return {"account_name": "New account", "balance": 400}
