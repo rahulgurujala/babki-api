@@ -1,3 +1,3 @@
-# denari-api
+# denarii-api
 
-API for denari, a financial bugdet application.
+API for denarii, a financial bugdet application.
