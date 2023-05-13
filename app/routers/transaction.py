@@ -116,7 +116,7 @@ def update_transaction(
     transaction_update: schemas.TransactionUpdate,
     db: Session = Depends(get_db),
     current_user: models.user = Depends(oauth2.get_current_user),
-):
+) -> schemas.Transaction:
     """Update account transaction"""
 
     transaction_query = db.query(models.Transaction).filter(models.Transaction.id == id)
