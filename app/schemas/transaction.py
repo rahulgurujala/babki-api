@@ -8,7 +8,6 @@ from app.models.transaction import Category
 
 class TransactionBase(BaseModel):
     amount: float
-    created_at: datetime = None
     is_debit: bool
 
 
@@ -27,6 +26,7 @@ class Transaction(TransactionBase):
     account_id: int
     user_id: int
     category: Category
+    created_at: datetime
 
     class Config:
         orm_mode = True
