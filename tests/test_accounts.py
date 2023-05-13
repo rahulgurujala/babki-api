@@ -3,11 +3,6 @@ import pytest
 from app import schemas
 
 
-@pytest.fixture()
-def update_account_data():
-    return {"account_name": "New account", "balance": 400}
-
-
 def test_get_all_accounts(authorized_client, test_accounts):
     res = authorized_client.get("/accounts")
 
@@ -110,10 +105,10 @@ def test_update_account_success(authorized_client, test_accounts, update_account
         f"/accounts/{test_accounts[0].id}", json=update_account_data
     )
 
-    updated_acocunt = schemas.Account(**res.json())
+    updated_account = schemas.Account(**res.json())
     assert res.status_code == 200
-    assert updated_acocunt.account_name == "New account"
-    assert updated_acocunt.balance == 400
+    assert updated_account.account_name == update_account_data["account_name"]
+    assert updated_account.balance == update_account_data["balance"]
 
 
 def test_update_account_not_exist(
