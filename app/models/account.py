@@ -42,3 +42,11 @@ class Account(Base):
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     transactions = relationship("Transaction", backref="account")
+
+    def __eq__(self, other):
+        if isinstance(other, Account):
+            return self.id == other.id
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

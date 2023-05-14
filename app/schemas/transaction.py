@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.models.transaction import Category
+from ..models.transaction import Category
 
 
 class TransactionBase(BaseModel):

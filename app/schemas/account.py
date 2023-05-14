@@ -3,9 +3,11 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from ..models.account import AccountType
+
 
 class AccountBase(BaseModel):
-    account_type: str
+    account_type: AccountType
     account_name: str
     account_number: Optional[str]
     balance: float

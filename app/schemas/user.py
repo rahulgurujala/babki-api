@@ -20,6 +20,10 @@ class UserUpdateIn(BaseModel):
     email: Optional[EmailStr]
 
 
+class UserChangePassword(BaseModel):
+    password: str
+
+
 class UserUpdateOut(BaseModel):
     id: int
     username: str

@@ -21,3 +21,11 @@ class User(Base):
     updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     accounts = relationship("Account", backref="user")
     transactions = relationship("Transaction", backref="user")
+
+    def __eq__(self, other):
+        if isinstance(other, User):
+            return self.id == other.id
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
