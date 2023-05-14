@@ -7,7 +7,7 @@ from app.models import User
 from app.repositories import UserRepository
 
 
-async def create_user(
+async def create(
     user_create: schemas.UserCreate, db: Session = Depends(get_db)
 ) -> schemas.User:
     """Creates user"""
@@ -20,33 +20,21 @@ async def create_user(
     user = User(**user_create.dict())
     user.password = utils.hash(user_create.password)
 
-    return await user_repository.create_user(user)
+    return await user_repository.create(user)
 
 
 async def get_user(
-    user_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(oauth2.get_current_user),
 ) -> schemas.User:
-    """Gets a user by id"""
+    """Gets a user"""
 
     user_repository = UserRepository(db)
-    user = await user_repository.get_user_by_id(user_id)
 
-    if not user:
-        raise HTTPException(status_code=404, detail=f"User does not exist.")
-
-    if user != current_user:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to perform requested action.",
-        )
-
-    return user
+    return await user_repository.get_user_by_id(current_user.id)
 
 
-async def update_user(
-    user_id: int,
+async def update(
     user_update: schemas.UserUpdateIn,
     db: Session = Depends(get_db),
     current_user: User = Depends(oauth2.get_current_user),
@@ -54,31 +42,17 @@ async def update_user(
     """Updates user info"""
 
     user_repository = UserRepository(db)
-    user = await user_repository.get_user_by_id(user_id)
 
-    if not user:
-        raise HTTPException(status_code=404, detail=f"User does not exist.")
-
-    if user != current_user:
-        print("compare works")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to perform requested action.",
-        )
-
-    if user_repository.get_user_by_email(user_update.email):
+    if user_update.email and user_repository.get_user_by_email(user_update.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="A user with that email was found.",
         )
 
-    user_repository.update_user(user_id, user_update)
-
-    return user
+    return await user_repository.update(current_user, user_update)
 
 
 async def change_password(
-    user_id: int,
     user_update: schemas.UserChangePassword,
     db: Session = Depends(get_db),
     current_user: User = Depends(oauth2.get_current_user),
@@ -86,37 +60,17 @@ async def change_password(
     """Changes user's password"""
 
     user_repository = UserRepository(db)
-    user = await user_repository.get_user_by_id(user_id)
-
-    if user != current_user:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to perform requested action.",
-        )
-
     user_update.password = utils.hash(user_update.password)
-    user_repository.update_user(user_id, user_update)
 
-    return Response(status_code=200)
+    return await user_repository.update(current_user, user_update)
 
 
-async def delete_user(
-    user_id: int,
+async def delete(
     db: Session = Depends(get_db),
     current_user: User = Depends(oauth2.get_current_user),
 ):
     """Deletes user"""
 
     user_repository = UserRepository(db)
-    user = await user_repository.get_user_by_id(user_id)
 
-    if not user:
-        raise HTTPException(status_code=404, detail=f"User does not exist.")
-
-    if user != current_user:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to perform requested action.",
-        )
-
-    return await user_repository.delete_user(user)
+    return await user_repository.delete(current_user)

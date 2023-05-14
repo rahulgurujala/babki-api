@@ -9,7 +9,7 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    async def create_user(self, user: User) -> User:
+    async def create(self, user: User) -> User:
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user)
@@ -25,10 +25,10 @@ class UserRepository:
     async def get_user_by_username(self, username) -> User:
         return self.db.query(User).filter_by(username=username).first()
 
-    async def update_user(
-        self, user_id: int, user_update: UserUpdateIn | UserChangePassword
+    async def update(
+        self, user: User, user_update: UserUpdateIn | UserChangePassword
     ) -> User:
-        query = self.db.query(User).filter(User.id == user_id)
+        query = self.db.query(User).filter_by(id=user.id)
         query.update(user_update.dict(exclude_unset=True), synchronize_session=False)
         user = query.first()
         self.db.commit()
@@ -36,6 +36,6 @@ class UserRepository:
 
         return user
 
-    async def delete_user(self, user: User):
+    async def delete(self, user: User):
         self.db.delete(user)
         self.db.commit()

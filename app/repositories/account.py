@@ -8,7 +8,7 @@ class AccountRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    async def create_account(self, account: Account) -> Account:
+    async def create(self, account: Account) -> Account:
         self.db.add(account)
         self.db.commit()
         self.db.refresh(account)
@@ -21,9 +21,7 @@ class AccountRepository:
     async def get_all_accounts(self, user_id: int) -> list[Account]:
         return self.db.query(Account).filter_by(user_id=user_id).all()
 
-    async def update_account(
-        self, account_id: int, account_update: AccountUpdate
-    ) -> Account:
+    async def update(self, account_id: int, account_update: AccountUpdate) -> Account:
         query = self.db.query(Account).filter_by(id=account_id)
         account = query.first()
         query.update(account_update.dict(exclude_unset=True), synchronize_session=False)
@@ -32,6 +30,6 @@ class AccountRepository:
 
         return account
 
-    async def delete_account(self, account: Account):
+    async def delete(self, account: Account):
         self.db.delete(account)
         self.db.commit()
