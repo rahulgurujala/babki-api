@@ -42,3 +42,6 @@ class Account(Base):
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     transactions = relationship("Transaction", backref="account")
+
+    def __repr__(self):
+        return f"Account {self.id}: {self.account_name}"

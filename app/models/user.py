@@ -21,3 +21,6 @@ class User(Base):
     updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     accounts = relationship("Account", backref="user")
     transactions = relationship("Transaction", backref="user")
+
+    def __repr__(self):
+        return f"User {self.id}: {self.email}"
