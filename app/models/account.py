@@ -43,6 +43,9 @@ class Account(Base):
     )
     transactions = relationship("Transaction", backref="account")
 
+    def __repr__(self):
+        return f"Account {self.id}: {self.account_name}"
+
     def __eq__(self, other):
         if isinstance(other, Account):
             return self.id == other.id

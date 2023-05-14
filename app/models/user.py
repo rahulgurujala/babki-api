@@ -22,6 +22,9 @@ class User(Base):
     accounts = relationship("Account", backref="user")
     transactions = relationship("Transaction", backref="user")
 
+    def __repr__(self):
+        return f"User {self.id}: {self.email}"
+
     def __eq__(self, other):
         if isinstance(other, User):
             return self.id == other.id
