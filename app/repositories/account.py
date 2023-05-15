@@ -15,8 +15,8 @@ class AccountRepository:
 
         return account
 
-    async def get_account_by_id(self, account_id: int) -> Account:
-        return self.db.query(Account).filter_by(id=account_id).first()
+    async def get_account_by_id(self, account_id: int, user_id: int) -> Account:
+        return self.db.query(Account).filter_by(id=account_id, user_id=user_id).first()
 
     async def get_all_accounts(self, user_id: int) -> list[Account]:
         return self.db.query(Account).filter_by(user_id=user_id).all()
