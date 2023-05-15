@@ -5,8 +5,8 @@ from app import schemas
 from app.config import settings
 
 
-def test_create_user(client):
-    res = client.post(
+async def test_create_user(client):
+    res = await client.post(
         "/users",
         json={"username": "test", "email": "test@gmail.com", "password": "test123"},
     )
@@ -23,14 +23,14 @@ def test_create_user(client):
         ("test@gmail.com", None, 422),
     ],
 )
-def test_incorrect_login(test_user, client, email, password, status_code):
-    res = client.post("/login", data={"username": email, "password": password})
+async def test_incorrect_login(test_user, client, email, password, status_code):
+    res = await client.post("/login", data={"username": email, "password": password})
 
     assert res.status_code == status_code
 
 
-def test_login_user(client, test_user):
-    res = client.post(
+async def test_login_user(client, test_user):
+    res = await client.post(
         "/login",
         data={"username": test_user["email"], "password": test_user["password"]},
     )
@@ -44,8 +44,8 @@ def test_login_user(client, test_user):
     assert res.token_type == "Bearer"
 
 
-def test_login_user_wrong_credentials(client, test_user):
-    res = client.post(
+async def test_login_user_wrong_credentials(client, test_user):
+    res = await client.post(
         "/login", data={"username": test_user["email"], "password": "wrongpassword123"}
     )
 
