@@ -5,9 +5,9 @@ from app import schemas
 from app.config import settings
 
 
-async def test_create_user(client):
-    res = await client.post(
-        "/users",
+def test_create_user(client):
+    res = client.post(
+        "/user",
         json={"username": "test", "email": "test@gmail.com", "password": "test123"},
     )
     assert res.json().get("username") == "test"
@@ -23,14 +23,14 @@ async def test_create_user(client):
         ("test@gmail.com", None, 422),
     ],
 )
-async def test_incorrect_login(test_user, client, email, password, status_code):
-    res = await client.post("/login", data={"username": email, "password": password})
+def test_incorrect_login(test_user, client, email, password, status_code):
+    res = client.post("/login", data={"username": email, "password": password})
 
     assert res.status_code == status_code
 
 
-async def test_login_user(client, test_user):
-    res = await client.post(
+def test_login_user(client, test_user):
+    res = client.post(
         "/login",
         data={"username": test_user["email"], "password": test_user["password"]},
     )
@@ -44,8 +44,8 @@ async def test_login_user(client, test_user):
     assert res.token_type == "Bearer"
 
 
-async def test_login_user_wrong_credentials(client, test_user):
-    res = await client.post(
+def test_login_user_wrong_credentials(client, test_user):
+    res = client.post(
         "/login", data={"username": test_user["email"], "password": "wrongpassword123"}
     )
 
