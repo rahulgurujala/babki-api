@@ -5,10 +5,9 @@ from app import models, oauth2, schemas
 from app.database import get_db
 from app.services import user as user_service
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/user", tags=["Users"])
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
 @router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 async def create_user(
     user_create: schemas.UserCreate, db: Session = Depends(get_db)
@@ -23,22 +22,20 @@ async def create_user(
     return user
 
 
-@router.get("/{id}", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_user(
-    id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> schemas.User:
     """Returns single user"""
 
-    user = await user_service.get_user(id, db)
+    user = await user_service.get_user(current_user.id, db)
 
     return user
 
 
-@router.patch("/{id}", status_code=status.HTTP_200_OK)
+@router.patch("/", status_code=status.HTTP_200_OK)
 async def update_user(
-    id: int,
     user_update: schemas.UserUpdateIn,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
@@ -53,7 +50,7 @@ async def update_user(
     return user
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
@@ -65,4 +62,4 @@ async def delete_user(
     except Exception as e:
         raise HTTPException(status_code=500, detail=repr(e))
 
-    raise Response(status_code=status.HTTP_204_NO_CONTENT)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

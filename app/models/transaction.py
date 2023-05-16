@@ -11,6 +11,7 @@ class Category(str, enum.Enum):
     HEALTH = "Health"
     FOOD = "Food"
     GROCERIES = "Groceries"
+    # INCOME = "Income"
     TRANSFER = "Transfer"
     TRANSPORT = "Transport"
     TRAVEL = "Travel"

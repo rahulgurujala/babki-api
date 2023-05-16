@@ -1,8 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app import oauth2, schemas
-from app.database import get_db
+from app import schemas
 from app.models import Account
 from app.repositories import AccountRepository
 
@@ -16,7 +15,7 @@ async def create(account_id: int, account_create: schemas.AccountCreate, db: Ses
 
 async def get_account_by_id(user_id: int, account_id: int, db: Session):
     account_repository = AccountRepository(db)
-    account = await account_repository.get_account_by_id(account_id, user_id)
+    account = await account_repository.get_account(account_id, user_id)
 
     if not account:
         raise HTTPException(status_code=404, detail="Account does not exist.")
@@ -30,7 +29,7 @@ async def get_account_by_id(user_id: int, account_id: int, db: Session):
     return account
 
 
-async def get_all_accounts(user_id: int, db: Session):
+async def get_all(user_id: int, db: Session):
     account_repository = AccountRepository(db)
 
     return await account_repository.get_all_accounts(user_id)
@@ -40,7 +39,7 @@ async def update(
     user_id: int, account_id: int, account_update: schemas.AccountUpdate, db: Session
 ):
     account_repository = AccountRepository(db)
-    account = await account_repository.get_account_by_id(account_id)
+    account = await account_repository.get_account(account_id, user_id)
 
     if not account:
         raise HTTPException(status_code=404, detail="Account does not exist.")
@@ -56,7 +55,7 @@ async def update(
 
 async def delete(user_id: int, account_id: int, db: Session):
     account_repository = AccountRepository(db)
-    account = await account_repository.get_account_by_id(account_id)
+    account = await account_repository.get_account(account_id, user_id)
 
     if not account:
         raise HTTPException(status_code=404, detail="Account does not exist.")

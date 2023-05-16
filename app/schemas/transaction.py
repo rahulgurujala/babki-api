@@ -1,28 +1,30 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from ..models.transaction import Category
+from app.models.transaction import Category
 
 
 class TransactionBase(BaseModel):
-    amount: float
-    is_debit: bool
+    user_id: int
 
 
 class TransactionCreate(TransactionBase):
-    user_id: int
+    amount: float
+    is_debit: bool
     account_id: int
 
 
-class TransactionUpdate(BaseModel):
+class TransactionUpdate(TransactionBase):
     amount: Optional[float]
     category: Optional[Category]
 
 
 class Transaction(TransactionBase):
     id: int
+    amount: float
+    is_debit: bool
     account_id: int
     user_id: int
     category: Category

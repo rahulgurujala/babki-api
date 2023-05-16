@@ -1,8 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app import oauth2, schemas, utils
-from app.database import get_db
+from app import schemas, utils
 from app.models import User
 from app.repositories import UserRepository
 
@@ -12,7 +11,7 @@ async def create(user_create: schemas.UserCreate, db: Session):
 
     user_repository = UserRepository(db)
 
-    if await user_repository.get_user_by_email():
+    if await user_repository.get_user_by_email(user_create.email):
         raise HTTPException(status_code=400, detail="A user with that email exists.")
 
     user = User(**user_create.dict())
@@ -25,8 +24,12 @@ async def get_user(user_id: int, db: Session):
     """Gets a user"""
 
     user_repository = UserRepository(db)
+    user = await user_repository.get_user_by_id(user_id)
 
-    return await user_repository.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=400, detail="User does not exist")
+
+    return user
 
 
 async def update(user: User, user_update: schemas.UserUpdateIn, db: Session):

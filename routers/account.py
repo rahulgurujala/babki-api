@@ -27,17 +27,17 @@ async def create_account(
 
 @router.get("", status_code=200)
 @router.get("/", status_code=200, include_in_schema=False)
-async def get_all_accounts(
+async def get_all(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> list[schemas.Account]:
     """Returns all user accounts"""
 
-    return await account_service.get_all_accounts(current_user.id, db)
+    return await account_service.get_all(current_user.id, db)
 
 
 @router.get("/{id}", status_code=200)
-async def get_account_by_id(
+async def get(
     id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
@@ -56,7 +56,7 @@ async def update_account(
 ) -> schemas.Account:
     """Updates account"""
 
-    account = await account_service.get_account_by_id(id, db)
+    account = await account_service.get_account_by_id(current_user.id, id, db)
 
     if account.user != current_user:
         raise HTTPException(
@@ -65,7 +65,7 @@ async def update_account(
         )
 
     try:
-        account = await account_service.update(id, account_update, db)
+        account = await account_service.update(current_user.id, id, account_update, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=repr(e))
 
@@ -80,7 +80,7 @@ async def delete_account(
 ):
     """Deletes user account"""
 
-    account = await account_service.get_account_by_id(id, db)
+    account = await account_service.get_account_by_id(current_user.id, id, db)
 
     if account.user != current_user:
         raise HTTPException(
@@ -89,7 +89,7 @@ async def delete_account(
         )
 
     try:
-        account = await account_service.delete(id, db)
+        account = await account_service.delete(current_user.id, id, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=repr(e))
 

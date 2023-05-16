@@ -54,7 +54,9 @@ async def get_all_transactions(
     """
 
     if account_id:
-        return await transaction_service.get_account_transactions(account_id, db)
+        return await transaction_service.get_account_transactions(
+            current_user.id, account_id, db
+        )
 
     return await transaction_service.get_all_transactions(current_user.id, db)
 
@@ -68,7 +70,7 @@ async def update_transaction(
 ) -> schemas.Transaction:
     """Update account transaction"""
 
-    transaction = transaction_service.get_transaction(current_user.id, id, db)
+    transaction = await transaction_service.get_transaction(current_user.id, id, db)
 
     if transaction.user_id != current_user.id:
         raise HTTPException(
@@ -92,7 +94,7 @@ async def delete_transaction(
 ):
     """Delete account transaction"""
 
-    transaction = transaction_service.get_transaction(current_user.id, id, db)
+    transaction = await transaction_service.get_transaction(current_user.id, id, db)
 
     if transaction.user_id != current_user.id:
         raise HTTPException(
@@ -101,7 +103,7 @@ async def delete_transaction(
         )
 
     try:
-        transaction = await transaction_service.delete(id, db)
+        transaction = await transaction_service.delete(current_user.id, id, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=repr(e))
 
