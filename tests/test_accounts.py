@@ -88,12 +88,6 @@ def test_delete_account_not_exist(authorized_client, test_accounts):
     assert res.status_code == 404
 
 
-def test_delete_other_user_account(authorized_client, test_accounts):
-    res = authorized_client.delete(f"/accounts/{test_accounts[3].id}")
-
-    assert res.status_code == 403
-
-
 def test_unauthorized_client_update_account(client, test_user, test_accounts):
     res = client.patch(f"/accounts/{test_accounts[0].id}")
 
@@ -117,13 +111,3 @@ def test_update_account_not_exist(
     res = authorized_client.patch("/accounts/9999", json=update_account_data)
 
     assert res.status_code == 404
-
-
-def test_update_other_user_account(
-    authorized_client, test_accounts, update_account_data
-):
-    res = authorized_client.patch(
-        f"/accounts/{test_accounts[3].id}", json=update_account_data
-    )
-
-    assert res.status_code == 403

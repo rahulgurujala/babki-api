@@ -45,3 +45,11 @@ class Account(Base):
 
     def __repr__(self):
         return f"Account {self.id}: {self.account_name}"
+
+    def __eq__(self, other):
+        if isinstance(other, Account):
+            return self.id == other.id
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

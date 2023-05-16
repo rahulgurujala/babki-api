@@ -7,7 +7,7 @@ from app.config import settings
 
 def test_create_user(client):
     res = client.post(
-        "/users",
+        "/user",
         json={"username": "test", "email": "test@gmail.com", "password": "test123"},
     )
     assert res.json().get("username") == "test"

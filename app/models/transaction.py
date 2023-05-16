@@ -39,3 +39,11 @@ class Transaction(Base):
     user_id: int = Column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
+
+    def __eq__(self, other):
+        if isinstance(other, Transaction):
+            return self.id == other.id
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

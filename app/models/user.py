@@ -24,3 +24,11 @@ class User(Base):
 
     def __repr__(self):
         return f"User {self.id}: {self.email}"
+
+    def __eq__(self, other):
+        if isinstance(other, User):
+            return self.id == other.id
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
