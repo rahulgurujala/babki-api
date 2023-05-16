@@ -3,8 +3,9 @@ import pytest
 from app import models, schemas
 
 
-async def test_add_transaction(authorized_client, test_accounts):
-    res = await authorized_client.post(
+def test_add_transaction(authorized_client, test_accounts):
+    old_balance = test_accounts[0].balance
+    res = authorized_client.post(
         "/transactions",
         json={"user_id": 1, "account_id": 1, "amount": 250, "is_debit": True},
     )
@@ -14,38 +15,24 @@ async def test_add_transaction(authorized_client, test_accounts):
     assert transaction.amount == 250
     assert transaction.is_debit == True
 
+    new_balance = (
+        authorized_client.get(f"/accounts/{test_accounts[0].id}").json().balance
+    )
+    assert transaction.amount == old_balance - new_balance
 
-async def test_add_transaction_other_user_account(authorized_client, test_accounts):
-    res = await authorized_client.post(
+
+def test_add_transaction_unauthorized_user(client, session, test_accounts):
+    transaction_data = {"user_id": 1, "account_id": 1, "amount": 250, "is_debit": True}
+    res = client.post(
         "/transactions",
-        json={"user_id": 2, "account_id": 1, "amount": 250, "is_debit": True},
+        json=transaction_data,
     )
 
-    assert res.status_code == 403
-
-
-# test add transaction unauthorized
-# async def test_add_transaction_unauthorized_user(client, session, test_accounts):
-#     transaction_data = {"user_id": 1, "account_id": 1, "amount": 250, "is_debit": True}
-#     res = await client.post(
-#         "/transactions",
-#         json=transaction_data,
-#     )
-
-#     accounts = (
-#         session.query(models.Account)
-#         .filter(models.Account.id == transaction_data["account_id"])
-#         .all()
-#     )
-#     # TODO: update transaction router to change account account balance
-#     # account = models.Account(**account)
-#     # print(test_accounts[0].balance)
-
-#     assert res.status_code == 401
+    assert res.status_code == 401
 
 
 # # test update transaction.
-# async def test_update_transaction(
+# def test_update_transaction(
 #     authorized_client, test_accounts, test_transactions, session
 # ):
 #     transaction = {"amount": 500, "category": "Groceries"}
