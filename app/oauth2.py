@@ -52,6 +52,4 @@ async def get_current_user(
 
     token = verify_access_token(token, credentials_exception)
 
-    user = await user_service.get_user(token.id, db)
-
-    return user
+    return await user_service.get_user(token.id, db)
