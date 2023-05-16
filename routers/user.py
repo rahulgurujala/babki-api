@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app import models, oauth2, schemas
@@ -14,10 +15,7 @@ async def create_user(
 ) -> schemas.User:
     """Creates user"""
 
-    try:
-        user = await user_service.create(user_create, db)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=repr(e))
+    user = await user_service.create(user_create, db)
 
     return user
 
@@ -42,10 +40,7 @@ async def update_user(
 ) -> schemas.User:
     """Updates user"""
 
-    try:
-        user = await user_service.update(current_user, user_update, db)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=repr(e))
+    user = await user_service.update(current_user, user_update, db)
 
     return user
 
@@ -57,9 +52,6 @@ async def delete_user(
 ):
     """Deletes user"""
 
-    try:
-        await user_service.delete(current_user, db)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=repr(e))
+    await user_service.delete(current_user, db)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

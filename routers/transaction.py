@@ -17,10 +17,7 @@ async def create_transaction(
 ) -> schemas.Transaction:
     """Create transaction"""
 
-    try:
-        transaction = await transaction_service.create(transaction_create, db)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=repr(e))
+    transaction = await transaction_service.create(transaction_create, db)
 
     return transaction
 
@@ -78,10 +75,7 @@ async def update_transaction(
             detail="Not authorized to perform action.",
         )
 
-    try:
-        transaction = await transaction_service.update(id, transaction_update, db)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=repr(e))
+    transaction = await transaction_service.update(id, transaction_update, db)
 
     return transaction
 
@@ -102,9 +96,6 @@ async def delete_transaction(
             detail="Not authorized to perform action.",
         )
 
-    try:
-        transaction = await transaction_service.delete(current_user.id, id, db)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=repr(e))
+    transaction = await transaction_service.delete(current_user.id, id, db)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

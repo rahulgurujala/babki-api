@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app import models, oauth2, schemas
@@ -17,10 +18,7 @@ async def create_account(
 ) -> schemas.Account:
     """Creates user account"""
 
-    try:
-        account = await account_service.create(current_user.id, account_create, db)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=repr(e))
+    account = await account_service.create(current_user.id, account_create, db)
 
     return account
 
@@ -64,10 +62,7 @@ async def update_account(
             detail="Not authorized to perform action.",
         )
 
-    try:
-        account = await account_service.update(current_user.id, id, account_update, db)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=repr(e))
+    account = await account_service.update(current_user.id, id, account_update, db)
 
     return account
 
@@ -88,9 +83,6 @@ async def delete_account(
             detail="Not authorized to perform action.",
         )
 
-    try:
-        account = await account_service.delete(current_user.id, id, db)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=repr(e))
+    account = await account_service.delete(current_user.id, id, db)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
