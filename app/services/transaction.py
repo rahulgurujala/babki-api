@@ -29,6 +29,10 @@ async def create(transaction_create: schemas.TransactionCreate, db: Session):
     transaction = Transaction(**transaction_create.dict())
     transaction = await transaction_repository.create(transaction)
 
+    transaction = schemas.Transaction(
+        **(transaction.__dict__), account_balance=transaction.account.balance
+    )
+
     return transaction
 
 
@@ -40,6 +44,10 @@ async def get_transaction(user_id: int, transaction_id: int, db: Session):
 
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction does not exist.")
+
+    transaction = schemas.Transaction(
+        **(transaction.__dict__), account_balance=transaction.account.balance
+    )
 
     return transaction
 
@@ -77,22 +85,22 @@ async def update(
     account = await account_repository.get_account(
         transaction.account_id, transaction.user_id
     )
-
+    amount = transaction_update.amount
     balance = await account_repository.get_balance(account.id, account.user_id)
-    balance = await account_repository.set_balance(
-        account.id, balance - transaction_update.amount
-    )
 
     if transaction.is_debit:
-        await account_repository.set_balance(
-            account.id, balance - transaction_update.amount
-        )
+        await account_repository.set_balance(account.id, balance - amount)
     else:
-        await account_repository.set_balance(
-            account.id, balance + transaction_update.amount
-        )
+        await account_repository.set_balance(account.id, balance + amount)
 
-    return await transaction_repository.update(transaction_id, transaction_update)
+    transaction = await transaction_repository.update(
+        transaction_id, transaction_update
+    )
+    transaction = schemas.Transaction(
+        **(transaction.__dict__), account_balance=transaction.account.balance
+    )
+
+    return transaction
 
 
 async def delete(user_id: int, transaction_id: int, db: Session):
