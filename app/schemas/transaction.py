@@ -29,6 +29,7 @@ class Transaction(TransactionBase):
     user_id: int
     category: Category
     created_at: datetime
+    account_balance: Optional[float]
 
     class Config:
         orm_mode = True
