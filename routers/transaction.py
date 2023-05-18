@@ -38,7 +38,7 @@ async def get_transaction(
 @router.get("", status_code=200)
 @router.get("/", status_code=200, include_in_schema=False)
 async def get_all_transactions(
-    account_id: int = None,
+    account_id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> list[schemas.Transaction]:
@@ -63,7 +63,7 @@ async def update_transaction(
     id: int,
     transaction_update: schemas.TransactionUpdate,
     db: Session = Depends(get_db),
-    current_user: models.user = Depends(oauth2.get_current_user),
+    current_user: models.User = Depends(oauth2.get_current_user),
 ) -> schemas.Transaction:
     """Update account transaction"""
 
