@@ -75,7 +75,8 @@ async def update_transaction(
             detail="Not authorized to perform action.",
         )
 
-    transaction = await transaction_service.update(id, transaction_update, db)
+    if transaction.amount != transaction_update.amount:
+        transaction = await transaction_service.update(id, transaction_update, db)
 
     return transaction
 
