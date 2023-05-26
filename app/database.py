@@ -3,8 +3,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 from .config import settings
 
-SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.DB_USERNAME}:{settings.DB_PASSWORD}@{settings.DB_HOSTNAME}: \
-                            {settings.DB_PORT}/{settings.DB_NAME}"
+SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.DB_USERNAME}:{settings.DB_PASSWORD}@ \
+                            {settings.DB_HOSTNAME}:{settings.DB_PORT}/{settings.DB_NAME}"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
