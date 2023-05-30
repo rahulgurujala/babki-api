@@ -7,7 +7,7 @@ from .account import Account
 
 
 class UserBase(BaseModel):
-    username: str
+    username: Optional[str]
     email: EmailStr
 
 

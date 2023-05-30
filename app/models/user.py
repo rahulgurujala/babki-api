@@ -10,7 +10,7 @@ class User(Base):
     __tablename__ = "users"
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
-    username: str = Column(String, nullable=False)
+    username: str = Column(String)
     email: str = Column(String, nullable=False, unique=True)
     password: str = Column(String, nullable=False)
     created_at: TIMESTAMP = Column(
