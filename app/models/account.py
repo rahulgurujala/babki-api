@@ -26,12 +26,12 @@ class Account(Base):
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     account_type: str = Column(Enum(AccountType, name="account_type"), nullable=False)
-    account_name: str = Column(String(50), nullable=False)
+    account_name: str = Column(String(), nullable=False)
     balance: float = Column(Float, server_default="0.0")
     currency: str = Column(
         Enum(CurrencyType, name="currency_type"), server_default="RUB"
     )
-    account_number: str = Column(String(20))
+    account_number: str = Column(String())
     created_at: TIMESTAMP = Column(
         TIMESTAMP(timezone=True),
         nullable=False,
