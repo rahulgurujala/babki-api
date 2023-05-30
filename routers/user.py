@@ -8,7 +8,7 @@ from app.services import user as user_service
 router = APIRouter(prefix="/user", tags=["Users"])
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=False)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(
     user_create: schemas.UserCreate, db: Session = Depends(get_db)
 ) -> schemas.User:
@@ -19,7 +19,7 @@ async def create_user(
     return user
 
 
-@router.get("/", status_code=status.HTTP_200_OK, include_in_schema=False)
+@router.get("/", status_code=status.HTTP_200_OK)
 async def get_user(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),

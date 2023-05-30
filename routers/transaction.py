@@ -8,7 +8,7 @@ from app.services import transaction as transaction_service
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=False)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_transaction(
     transaction_create: schemas.TransactionCreate,
     db: Session = Depends(get_db),
@@ -16,7 +16,9 @@ async def create_transaction(
 ) -> schemas.Transaction:
     """Create transaction"""
 
-    transaction = await transaction_service.create(transaction_create, db)
+    transaction = await transaction_service.create(
+        {**transaction_create.dict(), "user_id": current_user.id}, db
+    )
 
     return transaction
 
@@ -34,9 +36,9 @@ async def get_transaction(
     )
 
 
-@router.get("/", status_code=200, include_in_schema=False)
+@router.get("/", status_code=200)
 async def get_all_transactions(
-    account_id: int,
+    account_id: int | None = None,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> list[schemas.Transaction]:
@@ -74,7 +76,9 @@ async def update_transaction(
         )
 
     if transaction.amount != transaction_update.amount:
-        transaction = await transaction_service.update(id, transaction_update, db)
+        transaction = await transaction_service.update(
+            current_user.id, id, transaction_update, db
+        )
 
     return transaction
 
