@@ -1,9 +1,9 @@
 FROM python:3.11.2
 
-WORKDIR /usr/src/app
+WORKDIR /denarii
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r /denarii/requirements.txt
 
 COPY . .
 
