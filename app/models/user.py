@@ -9,16 +9,16 @@ from app.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id: int = Column(Integer, primary_key=True, autoincrement=True)
-    username: str = Column(String)
-    email: str = Column(String, nullable=False, unique=True)
-    password: str = Column(String, nullable=False)
-    created_at: TIMESTAMP = Column(
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
+    created_at = Column(
         TIMESTAMP(timezone=True),
         nullable=False,
         server_default=func.now(),
     )
-    updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
+    updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     accounts = relationship("Account", backref="user")
     transactions = relationship("Transaction", backref="user")
 

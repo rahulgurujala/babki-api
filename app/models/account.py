@@ -24,21 +24,19 @@ class AccountType(str, enum.Enum):
 class Account(Base):
     __tablename__ = "accounts"
 
-    id: int = Column(Integer, primary_key=True, autoincrement=True)
-    account_type: str = Column(Enum(AccountType, name="account_type"), nullable=False)
-    account_name: str = Column(String(), nullable=False)
-    balance: float = Column(Float, server_default="0.0")
-    currency: str = Column(
-        Enum(CurrencyType, name="currency_type"), server_default="RUB"
-    )
-    account_number: str = Column(String())
-    created_at: TIMESTAMP = Column(
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    account_type = Column(Enum(AccountType, name="account_type"), nullable=False)
+    account_name = Column(String(), nullable=False)
+    balance = Column(Float, server_default="0.0")
+    currency = Column(Enum(CurrencyType, name="currency_type"), server_default="RUB")
+    account_number = Column(String())
+    created_at = Column(
         TIMESTAMP(timezone=True),
         nullable=False,
         server_default=func.now(),
     )
-    updated_at: TIMESTAMP = Column(TIMESTAMP(timezone=True), onupdate=func.now())
-    user_id: int = Column(
+    updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
+    user_id = Column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     transactions = relationship("Transaction", backref="account")
