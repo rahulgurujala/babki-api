@@ -8,7 +8,6 @@ from app.services import transaction as transaction_service
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
 @router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 async def create_transaction(
     transaction_create: schemas.TransactionCreate,
@@ -35,7 +34,6 @@ async def get_transaction(
     )
 
 
-@router.get("", status_code=200)
 @router.get("/", status_code=200, include_in_schema=False)
 async def get_all_transactions(
     account_id: int,

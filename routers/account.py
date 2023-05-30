@@ -8,7 +8,6 @@ from app.services import account as account_service
 router = APIRouter(prefix="/accounts", tags=["Accounts"])
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
 @router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 async def create_account(
     account_create: schemas.AccountCreate,
@@ -22,7 +21,6 @@ async def create_account(
     return account
 
 
-@router.get("", status_code=200)
 @router.get("/", status_code=200, include_in_schema=False)
 async def get_all(
     db: Session = Depends(get_db),
