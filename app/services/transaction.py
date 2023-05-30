@@ -6,27 +6,27 @@ from app.models import Transaction
 from app.repositories import AccountRepository, TransactionRepository
 
 
-async def create(transaction_create: schemas.TransactionCreate, db: Session):
+async def create(transaction_create: dict, db: Session):
     account_repository = AccountRepository(db)
     account = await account_repository.get_account(
-        transaction_create.account_id, transaction_create.user_id
+        transaction_create["account_id"], transaction_create["user_id"]
     )
 
     if not account:
         raise HTTPException(
             status_code=404,
-            detail=f"Account with id: {transaction_create.account_id} does not exist.",
+            detail=f"Account with id: {transaction_create['account_id']} does not exist.",
         )
 
     # Update account balance
     balance = await account_repository.get_balance(account.id, account.user_id)
     balance = await account_repository.set_balance(
-        account.id, balance - transaction_create.amount
+        account.id, balance - transaction_create["amount"]
     )
 
     # Add transaction data
     transaction_repository = TransactionRepository(db)
-    transaction = Transaction(**transaction_create.dict())
+    transaction = Transaction(**transaction_create)
     transaction = await transaction_repository.create(transaction)
 
     transaction = schemas.Transaction(
@@ -70,11 +70,14 @@ async def get_all_transactions(user_id: int, db: Session):
 
 
 async def update(
-    transaction_id: int, transaction_update: schemas.TransactionUpdate, db: Session
+    user_id: int,
+    transaction_id: int,
+    transaction_update: schemas.TransactionUpdate,
+    db: Session,
 ):
     transaction_repository = TransactionRepository(db)
     transaction = await transaction_repository.get_transaction_by_id(
-        transaction_id, transaction_update.user_id
+        transaction_id, user_id
     )
 
     if not transaction:
