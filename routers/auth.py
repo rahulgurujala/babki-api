@@ -28,11 +28,14 @@ def login(
             status_code=status.HTTP_403_FORBIDDEN, detail="Invalid credentials."
         )
 
-    access_token = oauth2.create_access_token({"user_id": user.id})
+    access_token, expires_in = oauth2.create_access_token({"user_id": user.id})
+
+    # TODO: Add access token to token database to keep track of logged in users
 
     return {
         "access_token": access_token,
         "token_type": "Bearer",
         "user_id": user.id,
         "email": user.email,
+        "expires_in": expires_in,
     }

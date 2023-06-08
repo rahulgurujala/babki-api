@@ -6,6 +6,7 @@ class Token(BaseModel):
     token_type: str
     user_id: int
     email: str
+    expires_in: int
 
 
 class TokenData(BaseModel):
