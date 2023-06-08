@@ -17,7 +17,7 @@ async def create_transaction(
     """Create transaction"""
 
     transaction = await transaction_service.create(
-        {**transaction_create.dict(), "user_id": current_user.id}, db
+        current_user.id, transaction_create, db
     )
 
     return transaction
@@ -25,15 +25,13 @@ async def create_transaction(
 
 @router.get("/{id}", status_code=200)
 async def get_transaction(
-    transaction_id: int,
+    id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> schemas.Transaction:
     """Gets an account transaction"""
 
-    return await transaction_service.get_transaction(
-        current_user.id, transaction_id, db
-    )
+    return await transaction_service.get_transaction(current_user.id, id, db)
 
 
 @router.get("/", status_code=200)
