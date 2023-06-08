@@ -1,8 +1,8 @@
 """add all tables
 
-Revision ID: 01f2804b5bd9
+Revision ID: 1c9461c92c75
 Revises: 
-Create Date: 2023-05-30 22:35:13.141873
+Create Date: 2023-06-08 00:50:24.979741
 
 """
 import sqlalchemy as sa
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "01f2804b5bd9"
+revision = "1c9461c92c75"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,12 +40,7 @@ def upgrade() -> None:
         sa.Column(
             "account_type",
             sa.Enum(
-                "CASH",
-                "DEBIT_CREDIT_CARD",
-                "CHECKING",
-                "DEPOSIT",
-                "LOAN",
-                name="account_type",
+                "CASH", "CREDIT", "DEBIT", "CHECKING", "DEPOSIT", name="account_type"
             ),
             nullable=False,
         ),
@@ -65,7 +60,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("updated_at", sa.TIMESTAMP(timezone=True), nullable=True),
-        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -97,8 +92,8 @@ def upgrade() -> None:
             server_default=sa.text("now()"),
             nullable=False,
         ),
-        sa.Column("account_id", sa.Integer(), nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("account_id", sa.Integer(), nullable=True),
+        sa.Column("user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(["account_id"], ["accounts.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),

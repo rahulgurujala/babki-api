@@ -31,12 +31,8 @@ class Transaction(Base):
         nullable=False,
         server_default=func.now(),
     )
-    account_id = Column(
-        Integer, ForeignKey("accounts.id", ondelete="CASCADE"), nullable=False
-    )
-    user_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    account_id = Column(Integer, ForeignKey("accounts.id", ondelete="CASCADE"))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     def __eq__(self, other):
         if isinstance(other, Transaction):
