@@ -5,7 +5,7 @@ from routers import account, auth, transaction, user
 
 app = FastAPI(docs_url="/", title="denarii API")
 
-origins = ["*"]
+origins = ["http://localhost:5173"]
 
 app.add_middleware(
     CORSMiddleware,
