@@ -5,6 +5,8 @@ from pydantic import BaseModel
 
 from app.models.transaction import CategoryType
 
+from .account import Account
+
 
 class TransactionBase(BaseModel):
     amount: float
@@ -18,6 +20,7 @@ class TransactionCreate(TransactionBase):
 
 class TransactionUpdate(BaseModel):
     amount: Optional[float]
+    is_debit: bool
     category: Optional[CategoryType]
 
 
@@ -26,7 +29,7 @@ class Transaction(TransactionBase):
     user_id: int
     category: CategoryType
     created_at: datetime
-    account_balance: Optional[float]
+    account: Account
 
     class Config:
         orm_mode = True
