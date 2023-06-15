@@ -15,7 +15,7 @@ class TransactionBase(BaseModel):
 
 
 class TransactionCreate(TransactionBase):
-    pass
+    category: Optional[CategoryType]
 
 
 class TransactionUpdate(BaseModel):
