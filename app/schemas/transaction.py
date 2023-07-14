@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 
 from app.models.transaction import CategoryType
 
@@ -29,7 +29,12 @@ class Transaction(TransactionBase):
     user_id: int
     category: CategoryType
     created_at: datetime
-    account: Account
+    account_balance: float = Field(..., alias="account")
+
+    @validator("account_balance", pre=True)
+    def set_account_balance(cls, value):
+        print(value)
+        return value.balance
 
     class Config:
         orm_mode = True

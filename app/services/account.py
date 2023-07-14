@@ -6,16 +6,16 @@ from app.models import Account
 from app.repositories import AccountRepository
 
 
-async def create(account_id: int, account_create: schemas.AccountCreate, db: Session):
+def create(user_id: int, account_create: schemas.AccountCreate, db: Session):
     account_repository = AccountRepository(db)
-    account = Account(**account_create.dict(), user_id=account_id)
+    account = Account(**account_create.dict(), user_id=user_id)
 
-    return await account_repository.create(account)
+    return account_repository.create(account)
 
 
-async def get_account_by_id(user_id: int, account_id: int, db: Session):
+def get_account_by_id(user_id: int, account_id: int, db: Session):
     account_repository = AccountRepository(db)
-    account = await account_repository.get_account(account_id, user_id)
+    account = account_repository.get_account(account_id, user_id)
 
     if not account:
         raise HTTPException(status_code=404, detail="Account does not exist.")
@@ -29,17 +29,17 @@ async def get_account_by_id(user_id: int, account_id: int, db: Session):
     return account
 
 
-async def get_all(user_id: int, db: Session):
+def get_all(user_id: int, db: Session):
     account_repository = AccountRepository(db)
 
-    return await account_repository.get_all_accounts(user_id)
+    return account_repository.get_all_accounts(user_id)
 
 
-async def update(
+def update(
     user_id: int, account_id: int, account_update: schemas.AccountUpdate, db: Session
 ):
     account_repository = AccountRepository(db)
-    account = await account_repository.get_account(account_id, user_id)
+    account = account_repository.get_account(account_id, user_id)
 
     if not account:
         raise HTTPException(status_code=404, detail="Account does not exist.")
@@ -50,12 +50,12 @@ async def update(
             detail="Not authorized to perform action.",
         )
 
-    return await account_repository.update(account_id, account_update)
+    return account_repository.update(account_id, account_update)
 
 
-async def delete(user_id: int, account_id: int, db: Session):
+def delete(user_id: int, account_id: int, db: Session):
     account_repository = AccountRepository(db)
-    account = await account_repository.get_account(account_id, user_id)
+    account = account_repository.get_account(account_id, user_id)
 
     if not account:
         raise HTTPException(status_code=404, detail="Account does not exist.")
@@ -66,4 +66,4 @@ async def delete(user_id: int, account_id: int, db: Session):
             detail="Not authorized to perform action.",
         )
 
-    return await account_repository.delete(account)
+    return account_repository.delete(account)

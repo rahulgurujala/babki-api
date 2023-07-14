@@ -42,7 +42,7 @@ def verify_access_token(token: str, credentials_exception):
     return token_data
 
 
-async def get_current_user(
+def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)
 ):
     credentials_exception = HTTPException(
@@ -53,4 +53,4 @@ async def get_current_user(
 
     token = verify_access_token(token, credentials_exception)
 
-    return await user_service.get_user(token.id, db)
+    return user_service.get_user(token.id, db)

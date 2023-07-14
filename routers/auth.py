@@ -30,8 +30,6 @@ def login(
 
     access_token, expires_in = oauth2.create_access_token({"user_id": user.id})
 
-    # TODO: Add access token to token database to keep track of logged in users
-
     return {
         "access_token": access_token,
         "token_type": "Bearer",

@@ -8,29 +8,27 @@ class TransactionRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    async def create(self, transaction: Transaction) -> Transaction:
+    def create(self, transaction: Transaction) -> Transaction:
         self.db.add(transaction)
         self.db.commit()
         self.db.refresh(transaction)
 
         return transaction
 
-    async def get_transaction_by_id(
-        self, transaction_id: int, user_id: int
-    ) -> Transaction:
+    def get_transaction_by_id(self, transaction_id: int, user_id: int) -> Transaction:
         return (
             self.db.query(Transaction)
             .filter_by(id=transaction_id, user_id=user_id)
             .first()
         )
 
-    async def get_account_transactions(self, account_id: int) -> list[Transaction]:
+    def get_account_transactions(self, account_id: int) -> list[Transaction]:
         return self.db.query(Transaction).filter_by(account_id=account_id).all()
 
-    async def get_all_transactions(self, user_id: int) -> list[Transaction]:
+    def get_all_transactions(self, user_id: int) -> list[Transaction]:
         return self.db.query(Transaction).filter_by(user_id=user_id).all()
 
-    async def update(
+    def update(
         self, transaction_id: int, transaction_update: TransactionUpdate
     ) -> Transaction:
         query = self.db.query(Transaction).filter_by(id=transaction_id)
@@ -43,6 +41,6 @@ class TransactionRepository:
 
         return transaction
 
-    async def delete(self, transaction: Transaction):
+    def delete(self, transaction: Transaction):
         self.db.delete(transaction)
         self.db.commit()

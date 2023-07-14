@@ -9,33 +9,29 @@ router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_transaction(
+def create_transaction(
     transaction_create: schemas.TransactionCreate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> schemas.Transaction:
     """Create transaction"""
 
-    transaction = await transaction_service.create(
-        current_user.id, transaction_create, db
-    )
-
-    return transaction
+    return transaction_service.create(current_user.id, transaction_create, db)
 
 
 @router.get("/{id}", status_code=200)
-async def get_transaction(
+def get_transaction(
     id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> schemas.Transaction:
     """Gets an account transaction"""
 
-    return await transaction_service.get_transaction(current_user.id, id, db)
+    return transaction_service.get_transaction(current_user.id, id, db)
 
 
 @router.get("/", status_code=200)
-async def get_all_transactions(
+def get_all_transactions(
     account_id: int | None = None,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
@@ -49,15 +45,15 @@ async def get_all_transactions(
     """
 
     if account_id:
-        return await transaction_service.get_account_transactions(
+        return transaction_service.get_account_transactions(
             current_user.id, account_id, db
         )
 
-    return await transaction_service.get_all_transactions(current_user.id, db)
+    return transaction_service.get_all_transactions(current_user.id, db)
 
 
 @router.patch("/{id}", status_code=200)
-async def update_transaction(
+def update_transaction(
     id: int,
     transaction_update: schemas.TransactionUpdate,
     db: Session = Depends(get_db),
@@ -65,7 +61,7 @@ async def update_transaction(
 ) -> schemas.Transaction:
     """Update account transaction"""
 
-    transaction = await transaction_service.get_transaction(current_user.id, id, db)
+    transaction = transaction_service.get_transaction(current_user.id, id, db)
 
     if transaction.user_id != current_user.id:
         raise HTTPException(
@@ -74,7 +70,7 @@ async def update_transaction(
         )
 
     if transaction.amount != transaction_update.amount:
-        transaction = await transaction_service.update(
+        transaction = transaction_service.update(
             current_user.id, id, transaction_update, db
         )
 
@@ -82,14 +78,14 @@ async def update_transaction(
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_transaction(
+def delete_transaction(
     id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ):
     """Delete account transaction"""
 
-    transaction = await transaction_service.get_transaction(current_user.id, id, db)
+    transaction = transaction_service.get_transaction(current_user.id, id, db)
 
     if transaction.user_id != current_user.id:
         raise HTTPException(
@@ -97,6 +93,6 @@ async def delete_transaction(
             detail="Not authorized to perform action.",
         )
 
-    transaction = await transaction_service.delete(current_user.id, id, db)
+    transaction = transaction_service.delete(current_user.id, id, db)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
