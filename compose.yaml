@@ -6,7 +6,7 @@ services:
     depends_on:
       - db
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -16,6 +16,8 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+    volumes:
+      - .:/denarii/
 
   db:
     image: postgres
@@ -23,8 +25,8 @@ services:
     expose:
       - 5432
     environment:
-      - POSTGRES_PASSWORD=password123
-      - POSTGRES_DB=denarii
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - 5432:5432
     volumes:
