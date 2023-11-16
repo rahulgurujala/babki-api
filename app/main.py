@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import account, auth, transaction, user
+from app.routers import account, auth, transaction, user
 
 app = FastAPI(docs_url="/", title="denarii API")
 

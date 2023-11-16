@@ -19,8 +19,11 @@ class User(Base):
         server_default=func.now(),
     )
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
-    accounts = relationship("Account", backref="user", passive_deletes=True)
-    transactions = relationship("Transaction", backref="user", passive_deletes=True)
+
+    accounts = relationship("Account", back_populates="user", passive_deletes=True)
+    transactions = relationship(
+        "Transaction", back_populates="user", passive_deletes=True
+    )
 
     def __repr__(self):
         return f"User {self.id}: {self.email}"

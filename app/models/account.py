@@ -36,8 +36,13 @@ class Account(Base):
         server_default=func.now(),
     )
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
+
+    user = relationship("User", back_populates="user")
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
-    transactions = relationship("Transaction", backref="account", passive_deletes=True)
+
+    transactions = relationship(
+        "Transaction", back_populates="account", passive_deletes=True
+    )
 
     def __repr__(self):
         return f"Account {self.id}: {self.account_name}"

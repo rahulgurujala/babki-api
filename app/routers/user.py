@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
-from app import models, oauth2, schemas
+from app import crud, models, oauth2, schemas
 from app.database import get_db
 from app.services import user as user_service
 

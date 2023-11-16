@@ -1,6 +1,7 @@
 import enum
 
 from sqlalchemy import Boolean, Column, Enum, Float, ForeignKey, Integer
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
@@ -31,7 +32,11 @@ class Transaction(Base):
         nullable=False,
         server_default=func.now(),
     )
+
+    account = relationship("Account", back_populates="account")
     account_id = Column(Integer, ForeignKey("accounts.id", ondelete="CASCADE"))
+
+    user = relationship("User", back_populates="user")
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     def __eq__(self, other):
