@@ -53,4 +53,4 @@ class TransactionCRUD:
         db.commit()
 
 
-transaction = TransactionCRUD()
+transaction_crud = TransactionCRUD()

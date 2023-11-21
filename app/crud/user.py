@@ -38,4 +38,4 @@ class UserCRUD:
         db.commit()
 
 
-user = UserCRUD()
+user_crud = UserCRUD()

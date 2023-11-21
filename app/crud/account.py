@@ -46,4 +46,4 @@ class AccountCRUD:
         db.commit()
 
 
-account = AccountCRUD()
+account_crud = AccountCRUD()

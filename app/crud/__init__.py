@@ -1,3 +1,3 @@
-from .account import account
-from .transaction import transaction
-from .user import user
+from .account import account_crud
+from .transaction import transaction_crud
+from .user import user_crud
