@@ -29,10 +29,21 @@ class TransactionCRUD:
                 .filter_by(account_id=account_id)
                 .order_by(Transaction.created_at.desc())
                 .offset(skip)
+                .all()
             )
         return db.query(Transaction).filter_by(account_id=account_id).offset(skip).all()
 
-    def get_all_transactions(self, db: Session, user_id: int) -> list[Transaction]:
+    def get_all_transactions(
+        self, db: Session, user_id: int, sorted: bool = False, skip: int = 0
+    ) -> list[Transaction]:
+        if sorted:
+            return (
+                db.query(Transaction)
+                .filter_by(user_id=user_id)
+                .order_by(Transaction.created_at.desc())
+                .offset(skip)
+                .all()
+            )
         return db.query(Transaction).filter_by(user_id=user_id).all()
 
     def update(

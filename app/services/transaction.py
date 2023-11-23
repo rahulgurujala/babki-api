@@ -4,12 +4,13 @@ from sqlalchemy.orm import Session
 from app import schemas
 from app.crud import account_crud, transaction_crud
 from app.models import Transaction
-
-# TODO: Fix update transaction logic
+from app.schemas.account import Account
 
 
 def create(user_id: int, transaction_create: schemas.TransactionCreate, db: Session):
-    account = account_crud.get_account(transaction_create.account_id, user_id=user_id)
+    account = account_crud.get_account(
+        db, transaction_create.account_id, user_id=user_id
+    )
 
     if not account:
         raise HTTPException(
@@ -18,27 +19,27 @@ def create(user_id: int, transaction_create: schemas.TransactionCreate, db: Sess
         )
 
     # Update account balance
-    balance = account_crud.get_balance(account.id, user_id)
+    balance = account_crud.get_balance(db, account.id, user_id)
 
     if transaction_create.is_debit:
         balance = account_crud.set_balance(
-            account.id, balance - transaction_create.amount
+            db, account.id, balance - transaction_create.amount
         )
     else:
         balance = account_crud.set_balance(
-            account.id, balance + transaction_create.amount
+            db, account.id, balance + transaction_create.amount
         )
 
     # Add transaction data
     transaction = transaction_crud.create(
-        Transaction(**transaction_create.dict(), user_id=user_id)
+        db, Transaction(**transaction_create.dict(), user_id=user_id)
     )
 
     return transaction
 
 
 def get_transaction(user_id: int, transaction_id: int, db: Session):
-    transaction = transaction_crud.get_transaction_by_id(transaction_id, user_id)
+    transaction = transaction_crud.get_transaction_by_id(db, transaction_id, user_id)
 
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction does not exist.")
@@ -47,26 +48,20 @@ def get_transaction(user_id: int, transaction_id: int, db: Session):
 
 
 def get_account_transactions(user_id: int, account_id: int, db: Session):
-    account = account_crud.get_account(account_id, user_id)
+    account = account_crud.get_account(db, account_id, user_id)
 
     if not account:
         raise HTTPException(status_code=404, detail="Account does not exist.")
 
-    transactions = transaction_crud.get_account_transactions(account_id, sorted=True)
-
-    transactions = sorted(
-        transactions, reverse=True, key=lambda transaction: transaction.created_at
+    transactions = transaction_crud.get_account_transactions(
+        db, account_id, sorted=True
     )
 
     return transactions
 
 
 def get_all_transactions(user_id: int, db: Session):
-    transactions = transaction_crud.get_all_transactions(user_id)
-
-    transactions = sorted(
-        transactions, reverse=True, key=lambda transaction: transaction.created_at
-    )
+    transactions = transaction_crud.get_all_transactions(db, user_id, sorted=True)
 
     return transactions
 
@@ -77,49 +72,55 @@ def update(
     new_transaction: schemas.TransactionUpdate,
     db: Session,
 ):
-    old_transaction: Transaction = transaction_crud.get_transaction_by_id(
-        transaction_id, user_id
+    old_transaction = transaction_crud.get_transaction_by_id(
+        db, transaction_id, user_id
     )
 
     if not old_transaction:
         raise HTTPException(404, detail=f"Transaction of id: {id} does not exist.")
 
-    # account = account_crud.get_account(
-    #     old_transaction.account_id, old_transaction.user_id
-    # )
-    account = old_transaction.account
-    balance = account_crud.get_balance(account.id, account.user_id)
+    account: Account = old_transaction.account
+    balance = account_crud.get_balance(db, account.id, account.user_id)
+
+    print(balance)
 
     # Undo previous transaction
     if old_transaction.is_debit:
-        account_crud.set_balance(account.id, balance + old_transaction.amount)
+        balance = account_crud.set_balance(
+            db, account.id, balance + old_transaction.amount
+        )
     else:
-        account_crud.set_balance(account.id, balance - old_transaction.amount)
+        balance = account_crud.set_balance(
+            db, account.id, balance - old_transaction.amount
+        )
+
+    print(balance)
 
     # Process new transaction
     if new_transaction.is_debit:
-        account_crud.set_balance(account.id, balance - new_transaction.amount)
+        account_crud.set_balance(db, account.id, balance - new_transaction.amount)
     else:
-        account_crud.set_balance(account.id, balance + new_transaction.amount)
+        account_crud.set_balance(db, account.id, balance + new_transaction.amount)
 
-    transaction = transaction_crud.update(transaction_id, new_transaction)
+    print(balance)
 
-    return transaction
+    return transaction_crud.update(db, transaction_id, new_transaction)
 
 
 def delete(user_id: int, transaction_id: int, db: Session):
-    transaction = transaction_crud.get_transaction_by_id(transaction_id, user_id)
+    transaction = transaction_crud.get_transaction_by_id(db, transaction_id, user_id)
 
     if not transaction:
         raise HTTPException(404, detail=f"Transaction of id: {id} does not exist.")
 
     # Update account balance
-    account = account_crud.get_account(transaction.account_id, transaction.user_id)
-    balance = account_crud.get_balance(account.id, account.user_id)
+    account = account_crud.get_account(db, transaction.account_id, transaction.user_id)
+    balance = account_crud.get_balance(db, account.id, account.user_id)
 
+    # Undo transaction on account
     if transaction.is_debit:
-        account_crud.set_balance(account.id, balance + transaction.amount)
+        account_crud.set_balance(db, account.id, balance + transaction.amount)
     else:
-        account_crud.set_balance(account.id, balance - transaction.amount)
+        account_crud.set_balance(db, account.id, balance - transaction.amount)
 
-    return transaction_crud.delete(transaction)
+    return transaction_crud.delete(db, transaction)
