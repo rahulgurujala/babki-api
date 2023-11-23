@@ -25,16 +25,18 @@ class TransactionUpdate(BaseModel):
 
 
 class Transaction(TransactionBase):
+    class AccountOut(BaseModel):
+        id: int
+        balance: float
+
+        class Config:
+            orm_mode = True
+
     id: int
     user_id: int
     category: CategoryType
     created_at: datetime
-    account_balance: float = Field(..., alias="account")
-
-    @validator("account_balance", pre=True)
-    def set_account_balance(cls, value):
-        print(value)
-        return value.balance
+    account: AccountOut
 
     class Config:
         orm_mode = True
