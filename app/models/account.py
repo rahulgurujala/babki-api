@@ -37,7 +37,7 @@ class Account(Base):
     )
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
-    user = relationship("User", back_populates="user")
+    user = relationship("User", back_populates="accounts")
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     transactions = relationship(

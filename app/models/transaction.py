@@ -33,10 +33,10 @@ class Transaction(Base):
         server_default=func.now(),
     )
 
-    account = relationship("Account", back_populates="account")
+    account = relationship("Account", back_populates="transactions")
     account_id = Column(Integer, ForeignKey("accounts.id", ondelete="CASCADE"))
 
-    user = relationship("User", back_populates="user")
+    user = relationship("User", back_populates="transactions")
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     def __eq__(self, other):
