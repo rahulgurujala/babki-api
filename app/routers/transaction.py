@@ -16,7 +16,7 @@ def create_transaction(
 ) -> schemas.Transaction:
     """Create transaction"""
 
-    return transaction_service.create(current_user.id, transaction_create, db)
+    return transaction_service.create(db, current_user.id, transaction_create)
 
 
 @router.get("/{id}", status_code=200)
@@ -25,9 +25,9 @@ def get_transaction(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ) -> schemas.Transaction:
-    """Gets an account transaction"""
+    """Gets a transaction"""
 
-    return transaction_service.get_transaction(current_user.id, id, db)
+    return transaction_service.get_transaction(db, current_user.id, id)
 
 
 @router.get("/", status_code=200)
@@ -46,10 +46,10 @@ def get_all_transactions(
 
     if account_id:
         return transaction_service.get_account_transactions(
-            current_user.id, account_id, db
+            db, current_user.id, account_id
         )
 
-    return transaction_service.get_all_transactions(current_user.id, db)
+    return transaction_service.get_all_transactions(db, current_user.id)
 
 
 @router.patch("/{id}", status_code=200)
@@ -61,7 +61,7 @@ def update_transaction(
 ) -> schemas.Transaction:
     """Update account transaction"""
 
-    transaction = transaction_service.get_transaction(current_user.id, id, db)
+    transaction = transaction_service.get_transaction(db, current_user.id, id)
 
     if transaction.user_id != current_user.id:
         raise HTTPException(
@@ -69,10 +69,9 @@ def update_transaction(
             detail="Not authorized to perform action.",
         )
 
-    if transaction.amount != transaction_update.amount:
-        transaction = transaction_service.update(
-            current_user.id, id, transaction_update, db
-        )
+    transaction = transaction_service.update(
+        db, current_user.id, id, transaction_update
+    )
 
     return transaction
 
@@ -85,7 +84,7 @@ def delete_transaction(
 ):
     """Delete account transaction"""
 
-    transaction = transaction_service.get_transaction(current_user.id, id, db)
+    transaction = transaction_service.get_transaction(db, current_user.id, id)
 
     if transaction.user_id != current_user.id:
         raise HTTPException(
@@ -93,6 +92,6 @@ def delete_transaction(
             detail="Not authorized to perform action.",
         )
 
-    transaction = transaction_service.delete(current_user.id, id, db)
+    transaction = transaction_service.delete(db, current_user.id, id)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

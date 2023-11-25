@@ -6,7 +6,7 @@ from app.crud import user_crud
 from app.models import User
 
 
-def create(user_create: schemas.UserCreate, db: Session):
+def create(db: Session, user_create: schemas.UserCreate):
     """Creates user"""
 
     if user_crud.get_user_by_email(db, user_create.email):
@@ -18,7 +18,7 @@ def create(user_create: schemas.UserCreate, db: Session):
     return user_crud.create(db, user)
 
 
-def get_user(user_id: int, db: Session):
+def get_user(db: Session, user_id: int):
     """Gets a user"""
 
     user = user_crud.get_user_by_id(db, user_id)
@@ -29,7 +29,7 @@ def get_user(user_id: int, db: Session):
     return user
 
 
-def update(user: User, user_update: schemas.UserUpdateIn, db: Session):
+def update(db: Session, user: User, user_update: schemas.UserUpdateIn):
     """Updates user info"""
 
     if user_update.email and user_crud.get_user_by_email(db, user_update.email):
@@ -41,7 +41,7 @@ def update(user: User, user_update: schemas.UserUpdateIn, db: Session):
     return user_crud.update(db, user, user_update)
 
 
-def change_password(user: User, user_update: schemas.UserChangePassword, db: Session):
+def change_password(db: Session, user: User, user_update: schemas.UserChangePassword):
     """Changes user's password"""
 
     user_update.password = utils.hash(user_update.password)
@@ -49,7 +49,7 @@ def change_password(user: User, user_update: schemas.UserChangePassword, db: Ses
     return user_crud.update(db, user, user_update)
 
 
-def delete(user: User, db: Session):
+def delete(db: Session, user: User):
     """Deletes user"""
 
     return user_crud.delete(db, user)

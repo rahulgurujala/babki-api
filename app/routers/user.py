@@ -14,7 +14,7 @@ def create_user(
 ) -> schemas.User:
     """Creates user"""
 
-    user = user_service.create(user_create, db)
+    user = user_service.create(db, user_create)
 
     return user
 
@@ -26,7 +26,7 @@ def get_user(
 ) -> schemas.User:
     """Returns single user"""
 
-    user = user_service.get_user(current_user.id, db)
+    user = user_service.get_user(db, current_user.id)
 
     return user
 
@@ -39,7 +39,7 @@ def update_user(
 ) -> schemas.User:
     """Updates user"""
 
-    user = user_service.update(current_user, user_update, db)
+    user = user_service.update(db, current_user, user_update)
 
     return user
 
@@ -51,6 +51,6 @@ def delete_user(
 ):
     """Deletes user"""
 
-    user_service.delete(current_user, db)
+    user_service.delete(db, current_user)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

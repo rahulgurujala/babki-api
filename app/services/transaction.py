@@ -7,7 +7,7 @@ from app.models import Transaction
 from app.schemas.account import Account
 
 
-def create(user_id: int, transaction_create: schemas.TransactionCreate, db: Session):
+def create(db: Session, user_id: int, transaction_create: schemas.TransactionCreate):
     account = account_crud.get_account(
         db, transaction_create.account_id, user_id=user_id
     )
@@ -38,7 +38,7 @@ def create(user_id: int, transaction_create: schemas.TransactionCreate, db: Sess
     return transaction
 
 
-def get_transaction(user_id: int, transaction_id: int, db: Session):
+def get_transaction(db: Session, user_id: int, transaction_id: int):
     transaction = transaction_crud.get_transaction_by_id(db, transaction_id, user_id)
 
     if not transaction:
@@ -47,7 +47,7 @@ def get_transaction(user_id: int, transaction_id: int, db: Session):
     return transaction
 
 
-def get_account_transactions(user_id: int, account_id: int, db: Session):
+def get_account_transactions(db: Session, user_id: int, account_id: int):
     account = account_crud.get_account(db, account_id, user_id)
 
     if not account:
@@ -60,17 +60,17 @@ def get_account_transactions(user_id: int, account_id: int, db: Session):
     return transactions
 
 
-def get_all_transactions(user_id: int, db: Session):
+def get_all_transactions(db: Session, user_id: int):
     transactions = transaction_crud.get_all_transactions(db, user_id, sorted=True)
 
     return transactions
 
 
 def update(
+    db: Session,
     user_id: int,
     transaction_id: int,
-    new_transaction: schemas.TransactionUpdate,
-    db: Session,
+    transaction_update: schemas.TransactionUpdate,
 ):
     old_transaction = transaction_crud.get_transaction_by_id(
         db, transaction_id, user_id
@@ -82,8 +82,6 @@ def update(
     account: Account = old_transaction.account
     balance = account_crud.get_balance(db, account.id, account.user_id)
 
-    print(balance)
-
     # Undo previous transaction
     if old_transaction.is_debit:
         balance = account_crud.set_balance(
@@ -94,20 +92,20 @@ def update(
             db, account.id, balance - old_transaction.amount
         )
 
-    print(balance)
-
     # Process new transaction
-    if new_transaction.is_debit:
-        account_crud.set_balance(db, account.id, balance - new_transaction.amount)
+    if transaction_update.is_debit:
+        balance = account_crud.set_balance(
+            db, account.id, balance - transaction_update.amount
+        )
     else:
-        account_crud.set_balance(db, account.id, balance + new_transaction.amount)
+        balance = account_crud.set_balance(
+            db, account.id, balance + transaction_update.amount
+        )
 
-    print(balance)
-
-    return transaction_crud.update(db, transaction_id, new_transaction)
+    return transaction_crud.update(db, transaction_id, transaction_update)
 
 
-def delete(user_id: int, transaction_id: int, db: Session):
+def delete(db: Session, user_id: int, transaction_id: int):
     transaction = transaction_crud.get_transaction_by_id(db, transaction_id, user_id)
 
     if not transaction:

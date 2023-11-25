@@ -16,7 +16,7 @@ def create_account(
 ) -> schemas.Account:
     """Creates user account"""
 
-    account = account_service.create(current_user.id, account_create, db)
+    account = account_service.create(db, current_user.id, account_create)
 
     return account
 
@@ -28,7 +28,7 @@ def get_all(
 ) -> list[schemas.Account]:
     """Returns all user accounts"""
 
-    return account_service.get_all(current_user.id, db)
+    return account_service.get_all(db, current_user.id)
 
 
 @router.get("/{id}", status_code=200)
@@ -39,7 +39,7 @@ def get(
 ) -> schemas.Account:
     """Return single user account"""
 
-    return account_service.get_account_by_id(current_user.id, id, db)
+    return account_service.get_account_by_id(db, current_user.id, id)
 
 
 @router.patch("/{id}", status_code=200)
@@ -51,7 +51,7 @@ def update_account(
 ) -> schemas.Account:
     """Updates account"""
 
-    account = account_service.get_account_by_id(current_user.id, id, db)
+    account = account_service.get_account_by_id(db, current_user.id, id)
 
     if account.user != current_user:
         raise HTTPException(
@@ -59,7 +59,7 @@ def update_account(
             detail="Not authorized to perform action.",
         )
 
-    account = account_service.update(current_user.id, id, account_update, db)
+    account = account_service.update(db, current_user.id, id, account_update)
 
     return account
 
@@ -72,7 +72,7 @@ def delete_account(
 ):
     """Deletes user account"""
 
-    account = account_service.get_account_by_id(current_user.id, id, db)
+    account = account_service.get_account_by_id(db, current_user.id, id)
 
     if account.user != current_user:
         raise HTTPException(
@@ -80,6 +80,6 @@ def delete_account(
             detail="Not authorized to perform action.",
         )
 
-    account = account_service.delete(current_user.id, id, db)
+    account = account_service.delete(db, current_user.id, id)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

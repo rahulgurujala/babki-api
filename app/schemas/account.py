@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from ..models.account import AccountType
 
@@ -12,6 +12,10 @@ class AccountBase(BaseModel):
     account_type: AccountType
     balance: float
     currency: Optional[str]
+
+    @validator("balance")
+    def set_decimal_places(cls, value):
+        return round(value, 2)
 
 
 class AccountCreate(AccountBase):

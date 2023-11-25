@@ -6,13 +6,13 @@ from app.crud.account import account_crud
 from app.models import Account
 
 
-def create(user_id: int, account_create: schemas.AccountCreate, db: Session):
+def create(db: Session, user_id: int, account_create: schemas.AccountCreate):
     account = Account(**account_create.dict(), user_id=user_id)
 
     return account_crud.create(db, account)
 
 
-def get_account_by_id(user_id: int, account_id: int, db: Session):
+def get_account_by_id(db: Session, user_id: int, account_id: int):
     account: Account = account_crud.get_account(db, account_id, user_id)
 
     if not account:
@@ -27,12 +27,12 @@ def get_account_by_id(user_id: int, account_id: int, db: Session):
     return account
 
 
-def get_all(user_id: int, db: Session):
+def get_all(db: Session, user_id: int):
     return account_crud.get_all_accounts(db, user_id)
 
 
 def update(
-    user_id: int, account_id: int, account_update: schemas.AccountUpdate, db: Session
+    db: Session, user_id: int, account_id: int, account_update: schemas.AccountUpdate
 ):
     account = account_crud.get_account(db, account_id, user_id)
 
@@ -48,7 +48,7 @@ def update(
     return account_crud.update(db, account_id, account_update)
 
 
-def delete(user_id: int, account_id: int, db: Session):
+def delete(db: Session, user_id: int, account_id: int):
     account = account_crud.get_account(db, account_id, user_id)
 
     if not account:

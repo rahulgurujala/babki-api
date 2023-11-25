@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, validator
 
 from app.models.transaction import CategoryType
 
@@ -13,6 +13,10 @@ class TransactionBase(BaseModel):
     is_debit: bool
     account_id: int
 
+    @validator("amount")
+    def set_decimal_places(cls, value):
+        return round(value, 2)
+
 
 class TransactionCreate(TransactionBase):
     category: Optional[CategoryType]
@@ -23,11 +27,18 @@ class TransactionUpdate(BaseModel):
     is_debit: bool
     category: Optional[CategoryType]
 
+    class Config:
+        extra = "ignore"
+
 
 class Transaction(TransactionBase):
     class AccountOut(BaseModel):
         id: int
         balance: float
+
+        @validator("balance")
+        def set_decimal_places(cls, value):
+            return round(value, 2)
 
         class Config:
             orm_mode = True
