@@ -52,4 +52,4 @@ def get_current_user(
 
     token = verify_access_token(token, credentials_exception)
 
-    return user_service.get_user(token.id, db)
+    return user_service.get_user(db, token.id)
