@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app import models
+from app import models, schemas
 from app.config import settings
 from app.database import get_db
 from app.main import app
@@ -17,7 +17,7 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-@pytest.fixture()
+@pytest.fixture
 def session():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -28,7 +28,7 @@ def session():
         db.close()
 
 
-@pytest.fixture()
+@pytest.fixture
 def client(session):
     def override_get_db():
         try:
@@ -40,7 +40,7 @@ def client(session):
     yield TestClient(app)
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_user(client):
     user_data = {"username": "test", "email": "test@gmail.com", "password": "test123"}
     res = client.post(
@@ -55,8 +55,8 @@ def test_user(client):
     return new_user
 
 
-@pytest.fixture()
-def test_user2(client):
+@pytest.fixture
+def test_user2(client, session):
     user_data = {"username": "test2", "email": "test2@gmail.com", "password": "test123"}
     res = client.post(
         "/user",
@@ -70,20 +70,24 @@ def test_user2(client):
     return new_user
 
 
-@pytest.fixture()
+@pytest.fixture
 def token(test_user):
-    return create_access_token({"user_id": test_user["id"]})
+    token, _ = create_access_token({"user_id": test_user["id"]})
+
+    return token
 
 
-@pytest.fixture()
+@pytest.fixture
 def authorized_client(client, token):
     client.headers = {**client.headers, "Authorization": f"Bearer {token}"}
 
     return client
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_accounts(test_user, test_user2, session):
+    """Creates accounts on the database"""
+
     accounts_data = [
         {
             "account_type": "Cash",
@@ -111,11 +115,7 @@ def test_accounts(test_user, test_user2, session):
         },
     ]
 
-    def create_account_model(account):
-        return models.Account(**account)
-
-    accounts_map = map(create_account_model, accounts_data)
-    accounts = list(accounts_map)
+    accounts = [models.Account(**account) for account in accounts_data]
 
     session.add_all(accounts)
     session.commit()
@@ -124,25 +124,21 @@ def test_accounts(test_user, test_user2, session):
     return accounts
 
 
-@pytest.fixture()
-def test_transactions(test_user, test_accounts, session):
-    transactions_data = [
-        {"user_id": 1, "account_id": 1, "amount": 2000, "is_debit": False},
-    ]
+@pytest.fixture
+def test_transaction(test_user, test_accounts, session):
+    """Creates test transactions on the database"""
 
-    def create_transaction_model(transaction):
-        return models.Transaction(**transaction)
+    transaction = {"user_id": 1, "account_id": 1, "amount": 2000, "is_debit": False}
+    transaction = models.Transaction(**transaction)
 
-    transactions_map = map(create_transaction_model, transactions_data)
-    transactions = list(transactions_map)
-
-    session.add_all(transactions)
+    session.add(transaction)
     session.commit()
 
-    transactions = session.query(models.Transaction).all()
-    return transactions
+    transaction = session.query(models.Transaction).all()
+
+    return transaction
 
 
-@pytest.fixture()
+@pytest.fixture
 def update_account_data():
     return {"account_name": "New account", "balance": 400}

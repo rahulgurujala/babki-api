@@ -6,10 +6,6 @@ from app import schemas
 def test_get_all_accounts(authorized_client, test_accounts):
     res = authorized_client.get("/accounts")
 
-    def validate(accounts):
-        return [schemas.Account(**account) for account in accounts]
-
-    accounts = validate(res.json())
     assert res.status_code == 200
 
 
@@ -53,7 +49,7 @@ def test_create_account(authorized_client, account_name, account_type, balance):
         },
     )
 
-    created_account = schemas.Account(**res.json())
+    schemas.Account(**res.json())
     assert res.status_code == 201
 
 
