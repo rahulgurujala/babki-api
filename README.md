@@ -1,6 +1,6 @@
 # Denarii API
 
-Denarii API is the official API for handling all backend interactions for the Denarii application both on web and mobile (coming soon).
+Denarii API is the official API for handling all backend interactions for the Denarii web application still in development. (https://github.com/victor-ajayi/denarii)
 
 ## Getting Started
 1. Clone the repository:
